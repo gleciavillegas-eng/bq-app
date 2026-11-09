@@ -1,0 +1,139 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Messages | Burger Queen Admin{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-messages.css">
+{% endblock %}
+
+{% block admin_icon %}✉{% endblock %}
+{% block admin_heading %}Messages{% endblock %}
+{% block admin_subtitle %}Stay connected with your royal customers.{% endblock %}
+
+{% block admin_content %}
+
+<div class="messages-content">
+
+    <section class="messages-hero">
+        <div class="messages-hero-decoration decoration-one"></div>
+        <div class="messages-hero-decoration decoration-two"></div>
+
+        <div class="messages-hero-copy">
+            <span class="messages-eyebrow"><span>♛</span> CUSTOMER CARE</span>
+            <h2>Royal Messages</h2>
+            <p>Read questions, feedback and inquiries submitted through the Burger Queen contact page.</p>
+        </div>
+
+        <div class="messages-hero-stat">
+            <span class="messages-hero-stat-icon">✉</span>
+            <div>
+                <strong>{{ messages|length|number_format }}</strong>
+                <span>Total Messages</span>
+            </div>
+        </div>
+    </section>
+
+    {% for type, flashes in app.flashes %}
+        {% for flash in flashes %}
+            <div class="messages-alert {{ type }}">
+                <span class="messages-alert-icon">{{ type == 'success' ? '✓' : '!' }}</span>
+                <span>{{ flash }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section class="messages-panel">
+
+        <div class="messages-panel-header">
+            <div class="messages-panel-title">
+                <span class="messages-section-kicker">INBOX</span>
+                <h3>Customer Messages</h3>
+                <p>Recent conversations from your customers.</p>
+            </div>
+
+            <div class="messages-count-badge">
+                <span class="messages-count-icon">✉</span>
+                <span>{{ messages|length|number_format }} Messages</span>
+            </div>
+        </div>
+
+        {% if messages %}
+            <div class="messages-list">
+                {% for message in messages %}
+                    <article class="message-card">
+
+                        <div class="message-card-top">
+                            <div class="message-person">
+                                <div class="message-avatar">{{ message.name ? message.name|first|upper : 'C' }}</div>
+
+                                <div class="message-person-info">
+                                    <strong>{{ message.name ?: 'Customer' }}</strong>
+
+                                    <div class="message-contact">
+                                        {% if message.email %}
+                                            <a href="mailto:{{ message.email }}">{{ message.email }}</a>
+                                        {% endif %}
+
+                                        {% if message.phone and message.email %}
+                                            <span class="contact-separator">•</span>
+                                        {% endif %}
+
+                                        {% if message.phone %}
+                                            <span>{{ message.phone }}</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="message-date">
+                                <span class="message-date-icon">◷</span>
+                                {{ message.createdAt|date('M d, Y • h:i A', 'Asia/Manila') }}
+                            </div>
+                        </div>
+
+                        <div class="message-card-body">
+                            <span class="message-body-label">MESSAGE</span>
+                            <div class="message-text">{{ message.message|nl2br }}</div>
+                        </div>
+
+                        <div class="message-card-actions">
+                            {% if message.email %}
+                                <a href="mailto:{{ message.email }}" class="message-button message-button-reply">
+                                    <span>↗</span> Reply by Email
+                                </a>
+                            {% endif %}
+
+                            <form method="post" action="{{ path('app_admin_message_delete', {id: message.id}) }}" class="message-delete-form" onsubmit="return confirm('Delete this message?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('admin_message_delete') }}">
+
+                                <button type="submit" class="message-button message-button-delete">
+                                    <span>×</span> Delete
+                                </button>
+                            </form>
+                        </div>
+
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="messages-empty">
+                <div class="messages-empty-icon">✉</div>
+                <h3>Your inbox is empty</h3>
+                <p>Customer messages will appear here whenever someone contacts Burger Queen.</p>
+            </div>
+        {% endif %}
+
+    </section>
+
+    <section class="messages-tip-card">
+        <div class="messages-tip-icon">♛</div>
+
+        <div class="messages-tip-content">
+            <h3>Keep your royal customers heard.</h3>
+            <p>Respond to customer inquiries promptly to keep your royal court happy.</p>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

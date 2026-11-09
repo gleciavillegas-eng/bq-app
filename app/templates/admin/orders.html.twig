@@ -1,0 +1,268 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Orders | Burger Queen Admin{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-orders-table.css">
+{% endblock %}
+
+{% block admin_icon %}▤{% endblock %}
+{% block admin_heading %}Orders{% endblock %}
+{% block admin_subtitle %}Manage your royal customer orders.{% endblock %}
+
+{% block admin_content %}
+
+<div class="orders-content">
+
+    <section class="orders-hero">
+        <div class="orders-hero-decoration decoration-one" aria-hidden="true"></div>
+        <div class="orders-hero-decoration decoration-two" aria-hidden="true"></div>
+
+        <div class="orders-hero-copy">
+            <span class="orders-eyebrow">♛ ORDER MANAGEMENT</span>
+            <h2>Royal Orders</h2>
+            <p>
+                View and manage all customer orders, products, payment method,
+                delivery information, and order status.
+            </p>
+        </div>
+
+        <div class="orders-hero-stat">
+            <div class="orders-hero-stat-icon">♕</div>
+            <div>
+                <strong>{{ orders|length|number_format }}</strong>
+                <span>Total Orders</span>
+            </div>
+        </div>
+    </section>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="orders-alert {{ type }}" role="alert">
+                <span class="alert-icon">{{ type == 'success' ? '✓' : '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section class="orders-stats">
+        <article class="order-stat-card">
+            <div class="order-stat-icon">▤</div>
+            <div class="order-stat-copy"><span>TOTAL ORDERS</span><strong>{{ orders|length|number_format }}</strong></div>
+        </article>
+
+        <article class="order-stat-card">
+            <div class="order-stat-icon pending">◷</div>
+            <div class="order-stat-copy"><span>PENDING</span><strong>{{ stats.pending|number_format }}</strong></div>
+        </article>
+
+        <article class="order-stat-card">
+            <div class="order-stat-icon processing">↻</div>
+            <div class="order-stat-copy"><span>PROCESSING</span><strong>{{ stats.processing|number_format }}</strong></div>
+        </article>
+
+        <article class="order-stat-card">
+            <div class="order-stat-icon delivery">⌖</div>
+            <div class="order-stat-copy"><span>OUT FOR DELIVERY</span><strong>{{ stats.delivery|number_format }}</strong></div>
+        </article>
+
+        <article class="order-stat-card">
+            <div class="order-stat-icon completed">✓</div>
+            <div class="order-stat-copy"><span>COMPLETED</span><strong>{{ stats.completed|number_format }}</strong></div>
+        </article>
+
+        <article class="order-stat-card">
+            <div class="order-stat-icon revenue">₱</div>
+            <div class="order-stat-copy"><span>REVENUE</span><strong>₱{{ revenue|number_format(2) }}</strong></div>
+        </article>
+    </section>
+
+    <section class="orders-panel">
+
+        <div class="orders-panel-header">
+            <div class="orders-panel-title">
+                <span class="orders-section-kicker">ORDER LIST</span>
+                <h3>All Customer Orders</h3>
+                <p>All customer orders are displayed below in an easy-to-read table.</p>
+            </div>
+
+            <div class="orders-count-badge">
+                <strong>{{ orders|length|number_format }}</strong>
+                <span>Orders</span>
+            </div>
+        </div>
+
+        {% if orders %}
+            <div class="orders-table-wrapper">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>ORDER #</th>
+                            <th>CUSTOMER</th>
+                            <th>CONTACT</th>
+                            <th>ADDRESS</th>
+                            <th>TYPE</th>
+                            <th>PRODUCTS</th>
+                            <th>PAYMENT</th>
+                            <th>SUBTOTAL</th>
+                            <th>DELIVERY</th>
+                            <th>TOTAL</th>
+                            <th>STATUS</th>
+                            <th>DATE</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for order in orders %}
+                            {% set status_class = {
+                                'processing': 'status-processing',
+                                'out for delivery': 'status-delivery',
+                                'completed': 'status-completed',
+                                'cancelled': 'status-cancelled'
+                            }[order.status|lower] ?? 'status-pending' %}
+
+                            <tr class="order-main-row">
+
+                                <td>
+                                    <div class="excel-order-number"><span>#</span><strong>{{ order.id }}</strong></div>
+                                </td>
+
+                                <td>
+                                    <div class="excel-customer">
+                                        <div class="excel-customer-avatar">{{ order.customerName|first|upper }}</div>
+                                        <div class="excel-customer-info">
+                                            <strong>{{ order.customerName }}</strong>
+                                            <span>Customer</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="excel-contact">
+                                        {% if order.email %}<span><b>✉</b>{{ order.email }}</span>{% endif %}
+                                        {% if order.phone %}<span><b>☎</b>{{ order.phone }}</span>{% endif %}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {% if order.address %}
+                                        <div class="excel-address" title="{{ order.address }}">
+                                            <span>⌖</span><strong>{{ order.address }}</strong>
+                                        </div>
+                                    {% else %}
+                                        <span class="empty-cell">No address</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <span class="excel-order-type {{ order.orderType|lower == 'pickup' ? 'pickup' : 'delivery' }}">
+                                        {{ order.orderType|lower == 'pickup' ? '▣ Pickup' : '⌖ Delivery' }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <div class="excel-products">
+                                        {% set qty = 0 %}
+                                        {% for item in order.items %}
+                                            {% set qty = qty + item.quantity %}
+                                            <div class="excel-product-line">
+                                                <span class="product-qty">×{{ item.quantity }}</span>
+                                                <strong>{{ item.productName }}</strong>
+                                                <span class="product-line-price">₱{{ item.lineTotal|number_format(2) }}</span>
+                                            </div>
+                                        {% else %}
+                                            <span class="no-products">No products found</span>
+                                        {% endfor %}
+
+                                        {% if qty > 0 %}
+                                            <small class="total-items">{{ qty }} total item(s)</small>
+                                        {% endif %}
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="excel-payment">
+                                        <span class="payment-icon">₱</span>
+                                        <strong>{{ order.paymentMethod }}</strong>
+                                    </div>
+                                </td>
+
+                                <td><div class="excel-money">₱{{ order.subtotal|number_format(2) }}</div></td>
+                                <td><div class="excel-money delivery-money">₱{{ order.deliveryFee|number_format(2) }}</div></td>
+                                <td><div class="excel-total"><strong>₱{{ order.total|number_format(2) }}</strong></div></td>
+
+                                <td>
+                                    <span class="excel-status {{ status_class }}"><i></i>{{ order.status }}</span>
+                                </td>
+
+                                <td>
+                                    <div class="excel-date">
+                                        <strong>{{ order.createdAt|date('M d, Y', 'Asia/Manila') }}</strong>
+                                        <span>{{ order.createdAt|date('h:i A', 'Asia/Manila') }}</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="excel-actions">
+                                        <form method="post" action="{{ path('app_admin_order_status', {id: order.id}) }}" class="quick-status-form">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('admin_order_status') }}">
+
+                                            <select name="status" class="quick-status-select" aria-label="Change order status">
+                                                {% for option in statuses %}
+                                                    <option value="{{ option }}" {{ order.status == option ? 'selected' : '' }}>{{ option }}</option>
+                                                {% endfor %}
+                                            </select>
+
+                                            <button type="submit" class="quick-save-button">Save</button>
+                                        </form>
+                                    </div>
+                                </td>
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="orders-empty">
+                <div class="orders-empty-icon">▤</div>
+                <h3>No orders yet</h3>
+                <p>Customer orders will automatically appear here after a customer completes checkout.</p>
+                <a href="/menu" class="orders-empty-button"><span>View Menu</span><span>↗</span></a>
+            </div>
+        {% endif %}
+
+    </section>
+
+    <div class="orders-tip">
+        <div class="orders-tip-icon">♛</div>
+        <div>
+            <strong>Royal Order Tip</strong>
+            <p>
+                Check the customer's name, contact information, address, products,
+                payment method, and total before processing the order.
+                Customers earn crowns when an order is marked Completed.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block admin_scripts %}
+<script>
+document.querySelectorAll('.quick-status-form').forEach(function (form) {
+    form.addEventListener('submit', function (event) {
+        const status = form.querySelector('select[name="status"]');
+
+        if (status && status.value === 'Cancelled') {
+            if (!confirm('Are you sure you want to cancel this order?')) {
+                event.preventDefault();
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

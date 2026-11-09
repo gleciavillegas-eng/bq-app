@@ -1,0 +1,215 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Customers | Burger Queen Admin{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-customers.css">
+{% endblock %}
+
+{% block admin_icon %}♙{% endblock %}
+{% block admin_heading %}Customers{% endblock %}
+{% block admin_subtitle %}Manage your royal customer community.{% endblock %}
+
+{% block admin_content %}
+
+<div class="customers-content">
+
+    <section class="customers-hero">
+        <div class="customers-hero-decoration decoration-one"></div>
+        <div class="customers-hero-decoration decoration-two"></div>
+
+        <div class="customers-hero-copy">
+            <span class="customers-eyebrow">♛ ROYAL MEMBERS</span>
+            <h2>Customer Accounts</h2>
+            <p>View and manage the customers who have joined the Burger Queen royal community.</p>
+        </div>
+
+        <div class="customers-hero-stat">
+            <div class="customers-hero-stat-icon">♙</div>
+            <div>
+                <strong>{{ customers|length|number_format }}</strong>
+                <span>Members</span>
+            </div>
+        </div>
+    </section>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="customers-alert {{ type }}" role="alert">
+                <span class="alert-icon">{{ type == 'success' ? '✓' : '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section class="customers-stats">
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon">♙</div>
+            <div class="customer-stat-copy">
+                <span>TOTAL CUSTOMERS</span>
+                <strong>{{ customers|length|number_format }}</strong>
+            </div>
+        </article>
+
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon crowns">♛</div>
+            <div class="customer-stat-copy">
+                <span>TOTAL CROWNS</span>
+                <strong>{{ total_crowns|number_format }}</strong>
+            </div>
+        </article>
+
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon active">✓</div>
+            <div class="customer-stat-copy">
+                <span>ACCOUNT STATUS</span>
+                <strong>Active</strong>
+            </div>
+        </article>
+    </section>
+
+    <section class="customers-panel">
+
+        <div class="customers-panel-header">
+            <div class="customers-panel-title">
+                <span class="customers-section-kicker">CUSTOMER LIST</span>
+                <h3>All Customers</h3>
+                <p>Search, review, and manage registered customer accounts.</p>
+            </div>
+
+            <div class="customers-count-badge">
+                <strong>{{ customers|length|number_format }}</strong>
+                <span>Members</span>
+            </div>
+        </div>
+
+        <div class="customers-toolbar">
+            <form method="get" action="{{ path('app_admin_customers') }}" class="customer-search-form">
+                <div class="customer-search-box">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+                    <input type="search" name="search" value="{{ search }}" placeholder="Search by name, username, email, or phone..." autocomplete="off" aria-label="Search customers">
+                </div>
+
+                <button type="submit" class="customer-search-button"><span aria-hidden="true">⌕</span> Search</button>
+
+                {% if search != '' %}
+                    <a href="{{ path('app_admin_customers') }}" class="customer-clear-button">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if customers %}
+            <div class="customers-table-wrapper">
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th>CUSTOMER</th>
+                            <th>EMAIL</th>
+                            <th>PHONE</th>
+                            <th>CROWNS</th>
+                            <th>JOINED</th>
+                            <th>ACTION</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for customer in customers %}
+                            <tr>
+                                <td>
+                                    <div class="customer-cell">
+                                        <div class="customer-avatar">
+                                            <span>{{ customer.name|first|upper }}</span>
+                                            <i class="customer-avatar-status" aria-hidden="true"></i>
+                                        </div>
+
+                                        <div class="customer-information">
+                                            <strong>{{ customer.name }}</strong>
+                                            <span>@{{ customer.username }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    {% if customer.email %}
+                                        <div class="customer-email">
+                                            <span class="email-icon" aria-hidden="true">✉</span>
+                                            <span>{{ customer.email }}</span>
+                                        </div>
+                                    {% else %}
+                                        <span class="customer-not-provided">Not provided</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {% if customer.phone %}
+                                        <div class="customer-phone"><span aria-hidden="true">☎</span> {{ customer.phone }}</div>
+                                    {% else %}
+                                        <span class="customer-not-provided">Not provided</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    <div class="customer-crowns">
+                                        <span class="crown-icon">♛</span>
+                                        <strong>{{ customer.crowns|number_format }}</strong>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="customer-date">
+                                        <strong>{{ customer.createdAt|date('M d, Y', 'Asia/Manila') }}</strong>
+                                        <span>{{ customer.createdAt|date('h:i A', 'Asia/Manila') }}</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <form method="post" action="{{ path('app_admin_customer_delete', {id: customer.id}) }}" class="customer-delete-form" onsubmit="return confirm('Remove this customer account?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('admin_customer_delete') }}">
+
+                                        <button type="submit" class="customer-remove-button">
+                                            <span class="remove-icon" aria-hidden="true">×</span>
+                                            <span>Remove</span>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="customers-empty">
+                <div class="customers-empty-icon">♙</div>
+
+                <h3>{{ search != '' ? 'No customers found' : 'No customers yet' }}</h3>
+
+                <p>
+                    {% if search != '' %}
+                        No customer accounts matched your search. Try another name, username, email, or phone number.
+                    {% else %}
+                        Registered customer accounts will appear here once customers join Burger Queen.
+                    {% endif %}
+                </p>
+
+                {% if search != '' %}
+                    <a href="{{ path('app_admin_customers') }}" class="customers-empty-button">Clear Search</a>
+                {% endif %}
+            </div>
+        {% endif %}
+
+    </section>
+
+    <div class="customers-tip">
+        <div class="customers-tip-icon">♛</div>
+        <div>
+            <strong>Royal Member Tip</strong>
+            <p>
+                Customer crowns represent their Burger Queen loyalty balance.
+                Keep member accounts organized so your royal community stays easy to manage.
+            </p>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
