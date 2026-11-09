@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Burger Queen | Menu{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/home.css">
+{% endblock %}
+
+{% block body %}
+
+<section class="hero">
+    <div class="container hero-grid">
+
+        <div class="hero-content">
+            <span class="eyebrow">THE ROYAL BURGER HOUSE</span>
+
+            <h1>
+                Big Flavor.
+                <br>
+                <span>Royal Attitude.</span>
+            </h1>
+
+            <p>
+                Flame-grilled burgers, golden sides and creamy shakes
+                made for people who know exactly what they want.
+            </p>
+
+            <div class="hero-actions">
+                <a class="gold-btn" href="/royal-club">Join Royal Club</a>
+            </div>
+        </div>
+
+        <div class="hero-art">
+            <img class="hero-main" src="/assets/images/vanilla.jpg" alt="Vanilla shake">
+            <img class="hero-side" src="/assets/images/royalfries.jpg" alt="Royal fries">
+            <div class="hero-crown">♛</div>
+        </div>
+
+    </div>
+</section>
+
+<div class="wave">
+    <svg viewBox="0 0 1200 80" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 40C150 90 300 0 450 40s300-40 450 0 250-20 300 0v40H0z" fill="#F8DCC0"></path>
+    </svg>
+</div>
+
+<section class="section">
+    <div class="container">
+
+        <div class="section-head">
+            <span class="eyebrow">WHAT'S REIGNING</span>
+            <h2>Royal Favorites</h2>
+            <p>The crowd-pleasers that keep the crown moving.</p>
+        </div>
+
+        <div class="products-grid">
+            {% for product in products %}
+                {% include 'partials/product_card.html.twig' %}
+            {% else %}
+                <div class="empty-products">
+                    <p>No royal favorites are available yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<section class="section alt">
+    <div class="container split">
+
+        <div class="split-media">
+            <img src="/assets/images/onion.jpg" alt="Crispy onion rings">
+            <img src="/assets/images/royalfries.jpg" alt="Royal fries">
+        </div>
+
+        <div class="split-content">
+            <span class="eyebrow">WHY BURGER QUEEN</span>
+
+            <h2>Made like royalty. Served without the fuss.</h2>
+
+            <p>
+                We keep the menu focused and the flavor loud.
+                Every order is assembled fresh, with familiar
+                ingredients and a little extra attitude.
+            </p>
+
+            <div class="stats">
+                <div class="stat">
+                    <strong>100%</strong>
+                    <span>Fresh to order</span>
+                </div>
+                <div class="stat">
+                    <strong>8+</strong>
+                    <span>Royal favorites</span>
+                </div>
+                <div class="stat">
+                    <strong>24/7</strong>
+                    <span>Online ordering</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">ROYAL CLUB</span>
+            <h2>Every order earns you closer to the crown.</h2>
+            <p>Collect crowns, unlock rewards and get first dibs on new menu drops.</p>
+            <a class="primary-btn" href="/royal-club">See Membership Benefits</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

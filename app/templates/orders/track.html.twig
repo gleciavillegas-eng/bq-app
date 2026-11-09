@@ -1,0 +1,187 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Track Order #{{ order.id }} | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/track-order.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+    <style>
+        .dumaguete-marker-wrapper,
+        .rider-marker-wrapper {
+            background: transparent;
+            border: 0;
+        }
+
+        .dumaguete-marker,
+        .rider-marker {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 21px;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.25);
+        }
+
+        .dumaguete-marker {
+            background: #7D1F20;
+            color: #F8DCC0;
+            border: 3px solid #F8DCC0;
+        }
+
+        .rider-marker {
+            background: #D9992E;
+            border: 3px solid #fff;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<section class="tracking-page">
+    <div class="container">
+
+        <div class="tracking-header">
+            <div>
+                <span class="eyebrow">ROYAL DELIVERY</span>
+                <h1>Track Your Rider</h1>
+                <p>Order # {{ '%05d'|format(order.id) }}</p>
+            </div>
+
+            <a href="/orders" class="gold-btn tracking-back">← My Orders</a>
+        </div>
+
+        <div class="tracking-layout">
+
+            <div class="tracking-map-card">
+                <div id="riderMap" class="rider-map"></div>
+
+                <div class="map-overlay">
+                    <div class="map-live-dot"></div>
+                    <strong>Rider Tracking</strong>
+                    <span id="lastUpdate">
+                        {% if order.riderLatitude is not null and order.riderLongitude is not null %}
+                            Rider location available.
+                        {% else %}
+                            Waiting for rider location...
+                        {% endif %}
+                    </span>
+                </div>
+            </div>
+
+            <aside class="tracking-info">
+
+                <div class="tracking-status-card">
+                    <span class="eyebrow">ORDER STATUS</span>
+
+                    <div class="tracking-status">
+                        <span class="status-dot"></span>
+                        <strong>{{ order.status }}</strong>
+                    </div>
+
+                    <p>
+                        Your rider's location will appear on the map
+                        when tracking information is available.
+                    </p>
+                </div>
+
+                <div class="destination-card">
+                    <span class="destination-icon">📍</span>
+                    <div>
+                        <small>DELIVERY TO</small>
+                        <strong>{{ order.address }}</strong>
+                    </div>
+                </div>
+
+                <div class="tracking-actions">
+                    <button type="button" id="refreshLocation" class="tracking-refresh-btn">↻ Refresh Location</button>
+
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ order.address|url_encode }}"
+                       target="_blank" rel="noopener noreferrer" class="navigation-btn">
+                        🧭 Open Navigator
+                    </a>
+
+                    <a href="/receipt/{{ order.id }}" class="tracking-receipt-btn">🧾 View Receipt</a>
+                </div>
+
+                <div class="tracking-help">
+                    <span>♛</span>
+                    <div>
+                        <strong>Need help?</strong>
+                        <p>Keep your phone available so our rider can contact you if needed.</p>
+                    </div>
+                </div>
+
+            </aside>
+        </div>
+
+    </div>
+</section>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const riderLatitude = {{ order.riderLatitude is not null ? (order.riderLatitude * 1)|json_encode|raw : 'null' }};
+    const riderLongitude = {{ order.riderLongitude is not null ? (order.riderLongitude * 1)|json_encode|raw : 'null' }};
+    const lastUpdate = {{ order.riderLastUpdate ? order.riderLastUpdate|date('M d, Y h:i A', 'Asia/Manila')|json_encode|raw : 'null' }};
+
+    // Dumaguete City (default)
+    const defaultLatitude = 9.3068;
+    const defaultLongitude = 123.3054;
+
+    const mapLatitude = riderLatitude !== null ? riderLatitude : defaultLatitude;
+    const mapLongitude = riderLongitude !== null ? riderLongitude : defaultLongitude;
+
+    const map = L.map('riderMap').setView([mapLatitude, mapLongitude], 14);
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+    }).addTo(map);
+
+    if (riderLatitude === null || riderLongitude === null) {
+        const dumagueteIcon = L.divIcon({
+            className: 'dumaguete-marker-wrapper',
+            html: '<div class="dumaguete-marker">♛</div>',
+            iconSize: [45, 45],
+            iconAnchor: [22, 22]
+        });
+
+        L.marker([defaultLatitude, defaultLongitude], { icon: dumagueteIcon })
+            .addTo(map)
+            .bindPopup('<strong>Burger Queen</strong><br>Dumaguete City, Negros Oriental')
+            .openPopup();
+
+        document.getElementById('lastUpdate').textContent = 'Waiting for rider location · Dumaguete City';
+    } else {
+        const riderIcon = L.divIcon({
+            className: 'rider-marker-wrapper',
+            html: '<div class="rider-marker">🛵</div>',
+            iconSize: [45, 45],
+            iconAnchor: [22, 22]
+        });
+
+        L.marker([riderLatitude, riderLongitude], { icon: riderIcon })
+            .addTo(map)
+            .bindPopup('<strong>Your Rider</strong><br>Current location');
+
+        document.getElementById('lastUpdate').textContent =
+            lastUpdate ? 'Updated ' + lastUpdate : 'Rider location available';
+    }
+
+    const refreshButton = document.getElementById('refreshLocation');
+
+    if (refreshButton) {
+        refreshButton.addEventListener('click', function () {
+            refreshButton.disabled = true;
+            refreshButton.textContent = '↻ Refreshing...';
+            window.location.reload();
+        });
+    }
+});
+</script>
+
+{% endblock %}

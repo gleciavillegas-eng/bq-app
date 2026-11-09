@@ -1,0 +1,193 @@
+{% set receipt_number = 'BQ-' ~ ('%05d'|format(order.id)) %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt #{{ receipt_number }} | Burger Queen</title>
+
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/pages/receipt.css">
+</head>
+<body>
+
+<header class="receipt-topbar">
+    <div class="receipt-topbar-inner">
+        <a href="/menu" class="receipt-back">← Menu</a>
+        <div class="receipt-brand">BURGER <span>QUEEN</span></div>
+        <div class="receipt-step-label">STEP 3 • RECEIPT</div>
+    </div>
+</header>
+
+<main class="receipt-page">
+<div class="receipt-container">
+
+    <div class="receipt-success">
+        <div class="success-icon">✓</div>
+        <span class="receipt-eyebrow">STEP 3 • ORDER COMPLETE</span>
+        <h1>Order Confirmed!</h1>
+        <p>
+            Thank you for ordering from Burger Queen.
+            Your royal meal is now being prepared.
+        </p>
+        <div class="order-number">
+            Receipt No.
+            <strong>{{ receipt_number }}</strong>
+        </div>
+    </div>
+
+    <div class="order-steps">
+        <div class="order-step completed">
+            <div class="step-number">✓</div>
+            <div class="step-text"><strong>Build Order</strong><small>Choose your food</small></div>
+        </div>
+        <div class="order-step completed">
+            <div class="step-number">✓</div>
+            <div class="step-text"><strong>Review</strong><small>Check everything</small></div>
+        </div>
+        <div class="order-step active">
+            <div class="step-number">3</div>
+            <div class="step-text"><strong>Receipt</strong><small>Order confirmed</small></div>
+        </div>
+    </div>
+
+    <div class="receipt-paper" id="receipt">
+
+        <div class="receipt-header">
+            <div class="receipt-crown">♛</div>
+            <div>
+                <h2>BURGER <span>QUEEN</span></h2>
+                <p>THE ROYAL BURGER HOUSE</p>
+            </div>
+        </div>
+
+        <div class="receipt-divider"></div>
+
+        <div class="receipt-meta">
+            <div>
+                <span>RECEIPT NO.</span>
+                <strong>{{ receipt_number }}</strong>
+            </div>
+            <div>
+                <span>DATE</span>
+                <strong>{{ order.createdAt|date('F d, Y', 'Asia/Manila') }}</strong>
+            </div>
+            <div>
+                <span>TIME</span>
+                <strong>{{ order.createdAt|date('h:i A', 'Asia/Manila') }}</strong>
+            </div>
+            <div>
+                <span>STATUS</span>
+                <strong class="status-badge">{{ order.status }}</strong>
+            </div>
+        </div>
+
+        <div class="receipt-divider"></div>
+
+        <section class="receipt-section">
+            <h3>Customer Information</h3>
+
+            <div class="receipt-info-grid">
+                <div>
+                    <span>Name</span>
+                    <strong>{{ order.customerName }}</strong>
+                </div>
+
+                <div>
+                    <span>Phone</span>
+                    <strong>{{ order.phone }}</strong>
+                </div>
+
+                <div>
+                    <span>Email</span>
+                    <strong>{{ order.email }}</strong>
+                </div>
+
+                <div>
+                    <span>Order Type</span>
+                    <strong>{{ order.orderType == 'delivery' ? '🛵 Delivery' : '🏪 Pickup' }}</strong>
+                </div>
+
+                {% if order.orderType == 'delivery' %}
+                    <div class="full">
+                        <span>Delivery Address</span>
+                        <strong>{{ order.address|nl2br }}</strong>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <span>Payment Method</span>
+                    <strong>{{ order.paymentMethod }}</strong>
+                </div>
+            </div>
+        </section>
+
+        <div class="receipt-divider"></div>
+
+        <section class="receipt-section">
+            <h3>🛍️ Order Items</h3>
+
+            <div class="receipt-items">
+                {% for item in order.items %}
+                    <div class="receipt-item">
+                        <div class="receipt-item-name">
+                            <strong>{{ item.productName }}</strong>
+                            <small>{{ item.quantity }} × ₱{{ item.unitPrice|number_format(2) }}</small>
+                        </div>
+                        <strong>₱{{ item.lineTotal|number_format(2) }}</strong>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <div class="receipt-divider"></div>
+
+        <section class="receipt-totals">
+            <div class="receipt-total-row">
+                <span>Subtotal</span>
+                <strong>₱{{ order.subtotal|number_format(2) }}</strong>
+            </div>
+
+            <div class="receipt-total-row">
+                <span>Delivery Fee</span>
+                <strong>₱{{ order.deliveryFee|number_format(2) }}</strong>
+            </div>
+
+            <div class="receipt-grand-total">
+                <span>GRAND TOTAL</span>
+                <strong>₱{{ order.total|number_format(2) }}</strong>
+            </div>
+        </section>
+
+        {% if order.notes %}
+            <div class="receipt-notes">
+                <strong>Special Instructions</strong>
+                <p>{{ order.notes|nl2br }}</p>
+            </div>
+        {% endif %}
+
+        <div class="receipt-message">
+            <div class="message-crown">♛</div>
+            <strong>Thank you for choosing Burger Queen!</strong>
+            <p>Big Flavor. Royal Attitude.</p>
+        </div>
+
+    </div>
+
+    <div class="receipt-actions">
+        <button type="button" class="receipt-btn print-btn" onclick="window.print()">🖨 Print Receipt</button>
+        <button type="button" class="receipt-btn download-btn" onclick="window.print()">⬇ Download Receipt</button>
+        <a href="/orders" class="receipt-btn orders-btn">📋 My Orders</a>
+        <a href="/menu" class="receipt-btn menu-btn">🍔 Order Again</a>
+    </div>
+
+    <p class="download-note">
+        To download the receipt, choose <strong>Save as PDF</strong> in the print window.
+    </p>
+
+</div>
+</main>
+
+</body>
+</html>

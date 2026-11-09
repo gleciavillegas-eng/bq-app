@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Account | Burger Queen</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Work+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/css/auth.css">
+</head>
+<body>
+
+<div class="auth-page">
+
+    <section class="auth-art">
+        <div class="auth-art-overlay"></div>
+        <div class="auth-art-inner">
+            <span class="eyebrow">WELCOME TO THE COURT</span>
+            <h1>Join The<br><span>Royal Family.</span></h1>
+            <img src="/assets/images/vanilla.jpg" alt="Burger Queen Shake" class="hero-burger register-image">
+            <p>
+                Create an account to order faster,
+                save your details and earn Crowns
+                with every royal meal.
+            </p>
+        </div>
+    </section>
+
+    <section class="auth-form">
+        <div class="auth-box register-box">
+
+            <div class="brand-small">BURGER <span>QUEEN</span></div>
+
+            <h2>Let's get you<br>registered.</h2>
+            <p class="auth-subtitle">Create your account and start enjoying the royal treatment.</p>
+
+            {% if errors %}
+                <div class="alert alert-error">
+                    <div class="alert-icon">!</div>
+                    <div class="alert-content">
+                        <strong>Registration failed</strong>
+                        <ul>
+                            {% for err in errors %}
+                                <li>{{ err }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form class="register-form" action="{{ path('app_register') }}" method="post">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('register') }}">
+
+                <div class="field">
+                    <label for="username">Username</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">@</span>
+                        <input type="text" id="username" name="username" value="{{ data.username }}" minlength="4" maxlength="30" placeholder="Choose a username" autocomplete="username" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="fullname">Full Name</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">♙</span>
+                        <input type="text" id="fullname" name="fullname" value="{{ data.fullname }}" maxlength="120" placeholder="Enter your full name" autocomplete="name" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="email">Email</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">@</span>
+                        <input type="email" id="email" name="email" value="{{ data.email }}" placeholder="Enter your email" autocomplete="email" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="phone">Phone Number</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">☎</span>
+                        <input type="tel" id="phone" name="phone" value="{{ data.phone }}" placeholder="Enter your phone number" autocomplete="tel" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <span class="input-icon">●</span>
+                        <input type="password" id="password" name="password" minlength="8" placeholder="Minimum 8 characters" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)">Show</button>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="password-wrapper">
+                        <span class="input-icon">●</span>
+                        <input type="password" id="confirmPassword" name="confirmPassword" minlength="8" placeholder="Repeat your password" autocomplete="new-password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">Show</button>
+                    </div>
+                </div>
+
+                <label class="terms-label">
+                    <input type="checkbox" name="terms" required>
+                    <span>I agree to the <a href="#" onclick="return false;">Terms &amp; Conditions</a>.</span>
+                </label>
+
+                <button type="submit" class="primary-btn">
+                    <span>CREATE ACCOUNT</span>
+                    <span class="arrow">→</span>
+                </button>
+
+            </form>
+
+            <p class="muted">
+                Already have an account?
+                <a href="/login">Log in</a>
+            </p>
+
+            <div class="bottom-line"></div>
+            <p class="royal-note">♛ Eat royal. Live royal. Burger Queen.</p>
+
+        </div>
+    </section>
+
+</div>
+
+<script>
+function togglePassword(id, button) {
+    const input = document.getElementById(id);
+    if (!input) return;
+
+    if (input.type === 'password') {
+        input.type = 'text';
+        button.textContent = 'Hide';
+    } else {
+        input.type = 'password';
+        button.textContent = 'Show';
+    }
+}
+</script>
+
+</body>
+</html>

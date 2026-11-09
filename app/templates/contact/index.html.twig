@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Contact | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/contact.css">
+{% endblock %}
+
+{% block body %}
+
+<div class="contact-page">
+
+    <section class="contact-hero">
+        <div class="contact-hero-decoration decoration-one"></div>
+        <div class="contact-hero-decoration decoration-two"></div>
+
+        <div class="contact-container">
+            <div class="contact-hero-content">
+
+                <div class="contact-eyebrow">
+                    <span></span>
+                    SAY HELLO
+                    <span></span>
+                </div>
+
+                <h1>
+                    Let's Talk
+                    <br>
+                    <strong>Over Burgers.</strong>
+                </h1>
+
+                <p>
+                    Have a question, feedback, catering request,
+                    or simply want to say hello?
+                    We'd love to hear from you.
+                </p>
+
+                <div class="contact-hero-actions">
+                    <a href="#contact-form" class="contact-primary-button">
+                        <span>Send Us a Message</span>
+                        <strong>→</strong>
+                    </a>
+
+                    <a href="/menu" class="contact-secondary-button">
+                        View Our Menu
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-section">
+        <div class="contact-container">
+            <div class="contact-grid">
+
+                <div class="contact-information">
+
+                    <div class="contact-section-label">CONTACT THE ROYAL COURT</div>
+
+                    <h2>
+                        We're here
+                        <br>
+                        <span>for you.</span>
+                    </h2>
+
+                    <p class="contact-introduction">
+                        Whether you have a question about your order,
+                        want to share your Burger Queen experience,
+                        or have an idea for us, our team is ready
+                        to listen.
+                    </p>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">✉</div>
+                        <div class="contact-info-content">
+                            <span class="contact-info-label">EMAIL</span>
+                            <a href="mailto:hello@burgerqueen.com" class="contact-info-value">hello@burgerqueen.com</a>
+                            <p>We're always happy to hear from you.</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon">☎</div>
+                        <div class="contact-info-content">
+                            <span class="contact-info-label">PHONE</span>
+                            <a href="tel:+639123456789" class="contact-info-value">+63 912 345 6789</a>
+                            <p>Give the Royal Court a call.</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-info-item">
+                        <div class="contact-info-icon crown-icon">♛</div>
+                        <div class="contact-info-content">
+                            <span class="contact-info-label">BURGER QUEEN</span>
+                            <strong class="contact-info-value">The Royal Court</strong>
+                            <p>Serving royal flavors across the Philippines.</p>
+                        </div>
+                    </div>
+
+                    <div class="contact-quote">
+                        <div class="quote-mark">“</div>
+                        <p>Great food tastes even better when shared with great people.</p>
+                        <span>— THE BURGER QUEEN</span>
+                    </div>
+
+                </div>
+
+                <div class="contact-form-card" id="contact-form">
+
+                    <div class="contact-form-top">
+                        <div class="contact-section-label">SEND A MESSAGE</div>
+
+                        <h2>
+                            How can
+                            <br>
+                            <span>we help?</span>
+                        </h2>
+
+                        <p>Fill in the details below and we'll get back to you.</p>
+                    </div>
+
+                    <form method="post" action="{{ path('app_contact') }}#contact-form" class="contact-form">
+
+                        <input type="hidden" name="_token" value="{{ csrf_token('contact') }}">
+
+                        <div class="contact-field">
+                            <label for="name">Your Name</label>
+                            <input type="text" id="name" name="name" value="{{ data.name }}" placeholder="Enter your full name" maxlength="120" autocomplete="name" required>
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="{{ data.email }}" placeholder="you@example.com" maxlength="190" autocomplete="email" required>
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="phone">Phone Number <small>OPTIONAL</small></label>
+                            <input type="tel" id="phone" name="phone" value="{{ data.phone }}" placeholder="Enter your phone number" maxlength="40" autocomplete="tel">
+                        </div>
+
+                        <div class="contact-field">
+                            <label for="message">Message</label>
+                            <textarea id="message" name="message" placeholder="Tell us how we can help..." maxlength="2000" required>{{ data.message }}</textarea>
+                            <div class="character-note">Maximum 2000 characters</div>
+                        </div>
+
+                        <button type="submit" class="contact-submit-button">
+                            <span>Send Message</span>
+                            <strong>→</strong>
+                        </button>
+
+                    </form>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <section class="contact-bottom">
+        <div class="contact-bottom-decoration"></div>
+
+        <div class="contact-container">
+            <div class="contact-bottom-content">
+                <div>
+                    <div class="contact-section-label light-label">STILL HUNGRY?</div>
+
+                    <h2>
+                        Come hungry.
+                        <br>
+                        <span>Leave royal.</span>
+                    </h2>
+
+                    <p>Discover your next favorite burger from the Burger Queen menu.</p>
+                </div>
+
+                <a href="/menu" class="contact-gold-button">
+                    <span>Explore Menu</span>
+                    <strong>→</strong>
+                </a>
+            </div>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Burger Queen</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=Work+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/css/auth.css">
+</head>
+<body>
+
+<div class="auth-page">
+
+    <section class="auth-art">
+        <div class="auth-art-overlay"></div>
+        <div class="auth-art-inner">
+            <span class="eyebrow">WELCOME BACK</span>
+            <h1>Eat Like<br><span>Royalty.</span></h1>
+            <img src="/assets/images/hero-burger.png" alt="Burger Queen" class="hero-burger">
+            <p>
+                Welcome back to Burger Queen.
+                Log in to order your favorite meals,
+                earn Crowns, and enjoy big flavor
+                with royal attitude.
+            </p>
+        </div>
+    </section>
+
+    <section class="auth-form">
+        <div class="auth-box">
+
+            <div class="brand-small">BURGER <span>QUEEN</span></div>
+
+            <h2>Welcome Back</h2>
+            <p class="auth-subtitle">Sign in to continue your royal feast.</p>
+                        {% for message in app.flashes('success') %}
+                <div class="alert alert-success">
+                    <div class="alert-content"><strong>{{ message }}</strong></div>
+                </div>
+            {% endfor %}
+
+            {% if error %}
+                <div class="alert alert-error">
+                    <div class="alert-icon">!</div>
+                    <div class="alert-content">
+                        <strong>Login failed</strong>
+                        <ul>
+                            <li>Incorrect username/email or password. Please try again.</li>
+                        </ul>
+                    </div>
+                </div>
+            {% endif %}
+
+            <form class="login-form" action="{{ path('app_login') }}" method="post">
+
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+                <div class="field">
+                    <label for="login">Username or Email</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">@</span>
+                        <input
+                            type="text"
+                            id="login"
+                            name="_username"
+                            value="{{ last_username }}"
+                            placeholder="Enter username or email"
+                            autocomplete="username"
+                            required
+                            autofocus
+                        >
+                    </div>
+                </div>
+
+                <div class="field password-field">
+                    <label for="password">Password</label>
+                    <div class="password-wrapper">
+                        <span class="input-icon">●</span>
+                        <input
+                            type="password"
+                            id="password"
+                            name="_password"
+                            placeholder="Enter your password"
+                            autocomplete="current-password"
+                            required
+                        >
+                        <button type="button" class="password-toggle" onclick="togglePassword()" aria-label="Show or hide password">Show</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="primary-btn">
+                    <span>LOG IN</span>
+                    <span class="arrow">→</span>
+                </button>
+
+            </form>
+
+            <p class="muted">
+                Don't have a Burger Queen account?
+                <a href="/register">Create an account</a>
+            </p>
+
+            <div class="bottom-line"></div>
+
+            <p class="royal-note">♛ Eat royal. Live royal. Burger Queen.</p>
+
+        </div>
+    </section>
+
+</div>
+
+<script>
+function togglePassword() {
+    const password = document.getElementById('password');
+    const button = document.querySelector('.password-toggle');
+    if (!password || !button) return;
+
+    if (password.type === 'password') {
+        password.type = 'text';
+        button.textContent = 'Hide';
+    } else {
+        password.type = 'password';
+        button.textContent = 'Show';
+    }
+}
+</script>
+
+</body>
+</html>

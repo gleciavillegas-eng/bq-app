@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Account | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/account.css">
+
+    <style>
+        .account-grid {
+            display: grid;
+            grid-template-columns: 0.7fr 1.3fr;
+            gap: 25px;
+        }
+
+        .account-grid .muted {
+            color: #765f58;
+        }
+
+        .crown-count {
+            margin: 8px 0;
+            color: var(--red);
+            font: 900 80px "Fraunces", Georgia, serif;
+            line-height: 1;
+        }
+
+        .order-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #ead9cb;
+        }
+
+        .order-row a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .order-row a:hover strong {
+            color: var(--wine);
+        }
+
+        .account-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        @media (max-width: 900px) {
+            .account-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">YOUR ROYAL ACCOUNT</span>
+        <h1>Hello,<br><span>{{ app.user.name|split(' ')|first }}.</span></h1>
+        <p>Your crowns and order history, all in one place.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container account-grid">
+
+        <div class="content-card">
+            <span class="eyebrow">YOUR CROWNS</span>
+
+            <div class="crown-count">{{ app.user.crowns|number_format }}</div>
+
+            <p>Keep ordering to unlock more royal rewards.</p>
+
+            <a class="primary-btn" href="/menu">Order &amp; Earn</a>
+        </div>
+
+        <div class="content-card">
+            <span class="eyebrow">ORDER HISTORY</span>
+
+            {% for order in orders %}
+                <div class="order-row">
+                    <a href="/order-details/{{ order.id }}">
+                        <strong>#{{ order.id }}</strong>
+                        <div class="muted">
+                            {{ order.createdAt|date('M d, Y', 'Asia/Manila') }} · {{ order.status }}
+                        </div>
+                    </a>
+
+                    <strong>₱{{ order.total|number_format(2) }}</strong>
+                </div>
+            {% else %}
+                <p>No orders yet. Your first royal feast is waiting.</p>
+            {% endfor %}
+
+            {% if orders %}
+                <div class="account-links">
+                    <a class="primary-btn" href="/orders">View All Orders</a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

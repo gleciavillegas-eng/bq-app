@@ -1,0 +1,381 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Order #{{ order.id }} | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/orders.css">
+
+    <style>
+        .order-details-page {
+            min-height: 70vh;
+            padding: 60px 0 100px;
+            background: #fff8f1;
+        }
+
+        .back-orders {
+            display: inline-block;
+            margin-bottom: 24px;
+            color: #7d1f20;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .back-orders:hover {
+            text-decoration: underline;
+        }
+
+        .details-heading {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: flex-end;
+            gap: 20px;
+            margin-bottom: 32px;
+        }
+
+        .details-heading h1 {
+            margin: 8px 0;
+            color: #241512;
+            font-size: clamp(36px, 5vw, 56px);
+            line-height: 1;
+        }
+
+        .details-heading p {
+            margin: 0;
+            color: #765f58;
+        }
+
+        .order-status.large {
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .order-status.pending {
+            background: #fff3cd;
+            color: #8a5a00;
+        }
+
+        .order-status.out-for-delivery {
+            background: #dceeff;
+            color: #0b4f8a;
+        }
+
+        .status-card,
+        .details-card {
+            padding: 28px;
+            background: #fff;
+            border: 1px solid #ead9cb;
+            border-radius: 18px;
+            box-shadow: 0 10px 35px rgba(63, 20, 24, 0.06);
+        }
+
+        .status-card h2,
+        .details-card h2 {
+            margin: 0 0 20px;
+            color: #241512;
+            font-size: 26px;
+        }
+
+        .status-card {
+            margin-bottom: 24px;
+        }
+
+        .status-steps {
+            display: flex;
+            align-items: center;
+        }
+
+        .status-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 80px;
+            color: #987d72;
+            font-size: 13px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .status-circle {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #f1e4d8;
+            font-weight: 800;
+        }
+
+        .status-step.active {
+            color: #7d1f20;
+        }
+
+        .status-step.active .status-circle {
+            background: #7d1f20;
+            color: #fff;
+        }
+
+        .status-line {
+            flex: 1;
+            height: 3px;
+            margin: 0 6px 24px;
+            background: #ead9cb;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .details-grid > div:last-child {
+            display: grid;
+            gap: 24px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1e4d8;
+        }
+
+        .detail-item-number {
+            min-width: 44px;
+            color: #7d1f20;
+            font-weight: 800;
+        }
+
+        .detail-item-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item-info span {
+            color: #987d72;
+            font-size: 13px;
+        }
+
+        .price-breakdown {
+            margin-top: 18px;
+        }
+
+        .price-breakdown > div {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            color: #765f58;
+        }
+
+        .price-breakdown .final-total {
+            margin-top: 8px;
+            padding-top: 14px;
+            border-top: 2px dashed #ead9cb;
+            color: #7d1f20;
+            font-size: 20px;
+        }
+
+        .customer-detail {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 11px 0;
+            border-bottom: 1px solid #f1e4d8;
+        }
+
+        .customer-detail span {
+            color: #987d72;
+        }
+
+        .customer-detail strong {
+            text-align: right;
+        }
+
+        .order-notes {
+            margin: 0;
+            color: #765f58;
+        }
+
+        .details-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .secondary-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 14px 25px;
+            border: 1px solid #7d1f20;
+            border-radius: 10px;
+            color: #7d1f20;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.2s ease;
+        }
+
+        .secondary-button:hover {
+            background: #7d1f20;
+            color: #fff;
+        }
+
+        @media (max-width: 850px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-step {
+                min-width: 56px;
+                font-size: 11px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+{% set status = order.status|lower %}
+
+<section class="order-details-page">
+    <div class="container">
+
+        <a href="/orders" class="back-orders">← Back to Order History</a>
+
+        <div class="details-heading">
+            <div>
+                <span class="eyebrow">ROYAL ORDER</span>
+                <h1>Order #{{ order.id }}</h1>
+                <p>Placed on {{ order.createdAt|date('F d, Y', 'Asia/Manila') }} at {{ order.createdAt|date('h:i A', 'Asia/Manila') }}</p>
+            </div>
+
+            <span class="order-status large {{ status|replace({' ': '-'}) }}">{{ order.status }}</span>
+        </div>
+
+        <div class="status-card">
+            <h2>Order Status</h2>
+
+            <div class="status-steps">
+                <div class="status-step active">
+                    <div class="status-circle">✓</div>
+                    <span>Order Placed</span>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step {{ status in ['processing', 'preparing', 'out for delivery', 'ready', 'completed', 'delivered'] ? 'active' : '' }}">
+                    <div class="status-circle">2</div>
+                    <span>Preparing</span>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step {{ status in ['out for delivery', 'ready', 'completed', 'delivered'] ? 'active' : '' }}">
+                    <div class="status-circle">3</div>
+                    <span>{{ order.orderType == 'delivery' ? 'On the Way' : 'Ready' }}</span>
+                </div>
+
+                <div class="status-line"></div>
+
+                <div class="status-step {{ status in ['completed', 'delivered'] ? 'active' : '' }}">
+                    <div class="status-circle">✓</div>
+                    <span>Completed</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-grid">
+
+            <div class="details-card">
+                <h2>Your Items</h2>
+
+                {% for item in order.items %}
+                    <div class="detail-item">
+                        <div class="detail-item-number">{{ item.quantity }}×</div>
+                        <div class="detail-item-info">
+                            <strong>{{ item.productName }}</strong>
+                            <span>₱{{ item.unitPrice|number_format(2) }} each</span>
+                        </div>
+                        <strong>₱{{ item.lineTotal|number_format(2) }}</strong>
+                    </div>
+                {% endfor %}
+
+                <div class="price-breakdown">
+                    <div>
+                        <span>Subtotal</span>
+                        <strong>₱{{ order.subtotal|number_format(2) }}</strong>
+                    </div>
+
+                    <div>
+                        <span>Delivery Fee</span>
+                        <strong>₱{{ order.deliveryFee|number_format(2) }}</strong>
+                    </div>
+
+                    <div class="final-total">
+                        <span>Total</span>
+                        <strong>₱{{ order.total|number_format(2) }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="details-card">
+                    <h2>Customer Information</h2>
+
+                    <div class="customer-detail">
+                        <span>Name</span>
+                        <strong>{{ order.customerName }}</strong>
+                    </div>
+
+                    <div class="customer-detail">
+                        <span>Email</span>
+                        <strong>{{ order.email }}</strong>
+                    </div>
+
+                    <div class="customer-detail">
+                        <span>Phone</span>
+                        <strong>{{ order.phone }}</strong>
+                    </div>
+
+                    <div class="customer-detail">
+                        <span>Order Type</span>
+                        <strong>{{ order.orderType|capitalize }}</strong>
+                    </div>
+
+                    <div class="customer-detail">
+                        <span>Payment</span>
+                        <strong>{{ order.paymentMethod }}</strong>
+                    </div>
+
+                    {% if order.orderType == 'delivery' %}
+                        <div class="customer-detail">
+                            <span>Address</span>
+                            <strong>{{ order.address }}</strong>
+                        </div>
+                    {% endif %}
+                </div>
+
+                {% if order.notes %}
+                    <div class="details-card">
+                        <h2>Order Notes</h2>
+                        <p class="order-notes">{{ order.notes|nl2br }}</p>
+                    </div>
+                {% endif %}
+
+                <div class="details-actions">
+                    <a href="/menu" class="order-now-button">Order Again</a>
+                    <a href="/orders" class="secondary-button">View All Orders</a>
+                    <a href="/receipt/{{ order.id }}" class="secondary-button">🧾 Receipt</a>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order {{ product.name }} | Burger Queen</title>
+
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/pages/order-now.css">
+</head>
+<body>
+
+<header class="order-topbar">
+    <div class="order-topbar-inner">
+        <a href="/menu" class="back-menu-btn">← Back to Menu</a>
+        <div class="order-brand">BURGER <span>QUEEN</span></div>
+    </div>
+</header>
+
+<main class="order-page">
+<div class="order-container">
+
+    <div class="order-heading">
+        <span class="order-eyebrow">THE ROYAL ORDER</span>
+        <h1>Build Your Royal Meal</h1>
+        <p>
+            Add more delicious items or continue to review your order.
+            Nothing will be officially placed until you confirm it.
+        </p>
+    </div>
+
+    <div class="order-steps">
+        <div class="order-step active">
+            <div class="step-number">1</div>
+            <div class="step-text"><strong>Build Order</strong><small>Choose your food</small></div>
+        </div>
+        <div class="order-step">
+            <div class="step-number">2</div>
+            <div class="step-text"><strong>Review</strong><small>Check everything</small></div>
+        </div>
+        <div class="order-step">
+            <div class="step-number">3</div>
+            <div class="step-text"><strong>Receipt</strong><small>Order confirmed</small></div>
+        </div>
+    </div>
+
+    {% if errors %}
+        <div class="order-errors">
+            <strong>Please check the following:</strong>
+            {% for error in errors %}
+                <div>• {{ error }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <div class="order-layout">
+
+        {# ---------- PRODUCT CARD ---------- #}
+        <div class="order-card product-card">
+            <div class="product-image">
+                {% if product.image %}
+                    <img src="/{{ product.image }}" alt="{{ product.name }}">
+                {% else %}
+                    <div class="food-icon">🍔</div>
+                {% endif %}
+            </div>
+
+            <div class="product-info">
+                <span class="product-label">SELECTED PRODUCT</span>
+                <h2>{{ product.name }}</h2>
+
+                {% if product.description %}
+                    <p>{{ product.description }}</p>
+                {% endif %}
+
+                <div class="product-price">₱{{ product.price|number_format(2) }}</div>
+
+                <button type="submit" form="orderForm" name="add_another" value="1" class="add-another-btn" style="font: inherit; cursor: pointer; background: transparent;">＋ Add Another Order</button>
+            </div>
+        </div>
+
+        {# ---------- FORM CARD ---------- #}
+        <div class="form-card">
+
+            <div class="form-header">
+                <h2>Customer &amp; Order Details</h2>
+                <p>Enter your information before reviewing your order.</p>
+            </div>
+
+            <div class="form-body">
+            <form method="post" action="{{ path('app_order_now', {product: product.id}) }}" id="orderForm">
+
+                <input type="hidden" name="product" value="{{ product.id }}">
+
+                {# 1. CUSTOMER INFORMATION #}
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-number">1</div>
+                        <div>
+                            <h3>Customer Information</h3>
+                            <p>How can we contact you?</p>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="customer_name">Full Name</label>
+                            <input type="text" id="customer_name" name="customer_name" value="{{ values.customer_name }}" placeholder="Juan Dela Cruz" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone">Phone Number</label>
+                            <input type="text" id="phone" name="phone" value="{{ values.phone }}" placeholder="09XX XXX XXXX" required>
+                        </div>
+
+                        <div class="form-group full">
+                            <label for="email">Email Address</label>
+                            <input type="email" id="email" name="email" value="{{ values.email }}" placeholder="you@example.com" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="quantity">Quantity of {{ product.name }}</label>
+                            <div class="quantity-control">
+                                <button type="button" class="quantity-btn" id="minusBtn">−</button>
+                                <input type="number" id="quantity" name="quantity" value="{{ quantity }}" min="1" max="50" required>
+                                <button type="button" class="quantity-btn" id="plusBtn">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {# 2. DELIVERY OR PICKUP #}
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-number">2</div>
+                        <div>
+                            <h3>Delivery or Pickup?</h3>
+                            <p>Choose how you want to receive your order.</p>
+                        </div>
+                    </div>
+
+                    <div class="order-options">
+                        <label class="order-option">
+                            <input type="radio" name="order_type" value="delivery" {{ values.order_type == 'delivery' ? 'checked' : '' }}>
+                            <div class="option-box">
+                                <div class="option-icon">🛵</div>
+                                <div>
+                                    <strong>Delivery</strong>
+                                    <small>Our rider will bring your order to your address.</small>
+                                    <b>+ ₱{{ delivery_fee|number_format(0) }} delivery fee</b>
+                                </div>
+                            </div>
+                        </label>
+
+                        <label class="order-option">
+                            <input type="radio" name="order_type" value="pickup" {{ values.order_type == 'pickup' ? 'checked' : '' }}>
+                            <div class="option-box">
+                                <div class="option-icon">🏪</div>
+                                <div>
+                                    <strong>Pickup</strong>
+                                    <small>Pick up your order directly at Burger Queen.</small>
+                                    <b>No delivery fee</b>
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                {# 3. ADDRESS #}
+                <div class="form-section" id="addressSection">
+                    <div class="section-title">
+                        <div class="section-number">3</div>
+                        <div>
+                            <h3>Delivery Address</h3>
+                            <p>Tell our rider where to bring your order.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">Complete Address</label>
+                        <textarea id="address" name="address" rows="4" placeholder="House number, street, barangay, city...">{{ values.address }}</textarea>
+                    </div>
+                </div>
+
+                {# 4. PAYMENT #}
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-number">4</div>
+                        <div>
+                            <h3>Payment Method</h3>
+                            <p>Choose how you would like to pay.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="payment_method">Select Payment</label>
+                        <select id="payment_method" name="payment_method" required>
+                            <option value="Cash on Delivery" {{ values.payment_method == 'Cash on Delivery' ? 'selected' : '' }}>💵 Cash on Delivery</option>
+                            <option value="Cash on Pickup" {{ values.payment_method == 'Cash on Pickup' ? 'selected' : '' }}>💵 Cash on Pickup</option>
+                        </select>
+                    </div>
+                </div>
+
+                {# 5. NOTES #}
+                <div class="form-section">
+                    <div class="section-title">
+                        <div class="section-number">5</div>
+                        <div>
+                            <h3>Special Instructions</h3>
+                            <p>Optional — tell us anything important.</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="notes">Additional Notes</label>
+                        <textarea id="notes" name="notes" rows="3" placeholder="Example: No onions, extra sauce...">{{ values.notes }}</textarea>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="/menu" class="cancel-btn" onclick="return confirm('Cancel this order and return to the menu?');">← Cancel</a>
+                    <button type="submit" class="review-btn">Review Order →</button>
+                </div>
+
+            </form>
+            </div>
+        </div>
+
+        {# ---------- SUMMARY ---------- #}
+        <aside class="summary-card">
+            <span class="summary-label">ORDER SUMMARY</span>
+            <h2>Your Royal Meal</h2>
+
+            {% for item in cart %}
+                <div class="summary-item">
+                    <div class="summary-item-row">
+                        <div>
+                            <strong>{{ item.product_name }}</strong>
+                            <small>Qty: {{ item.quantity }}</small>
+                        </div>
+                        <strong>₱{{ (item.product_price * item.quantity)|number_format(2) }}</strong>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <div class="summary-item">
+                <div class="summary-item-row">
+                    <div>
+                        <strong>{{ product.name }}</strong>
+                        <small>Qty: <span id="summary-quantity">{{ quantity }}</span></small>
+                    </div>
+                    <strong id="summary-product-price">₱{{ (product.price * quantity)|number_format(2) }}</strong>
+                </div>
+            </div>
+
+            <div class="summary-line">
+                <span>Subtotal</span>
+                <strong id="summary-subtotal">₱{{ (cart_subtotal + product.price * quantity)|number_format(2) }}</strong>
+            </div>
+
+            <div class="summary-line">
+                <span>Delivery Fee</span>
+                <strong id="summary-delivery">₱{{ (values.order_type == 'delivery' ? delivery_fee : 0)|number_format(2) }}</strong>
+            </div>
+
+            <div class="summary-total">
+                <span>TOTAL</span>
+                <strong id="summary-total">₱{{ (cart_subtotal + product.price * quantity + (values.order_type == 'delivery' ? delivery_fee : 0))|number_format(2) }}</strong>
+            </div>
+
+            <div class="summary-info">
+                ✓ Your order is not placed yet.
+                <br><br>
+                You can add more products before reviewing.
+                <br><br>
+                Click <strong>Review Order</strong> to continue to Step 2.
+                <br><br>
+                The order will only be saved after you confirm it on the review page.
+            </div>
+        </aside>
+
+    </div>
+</div>
+</main>
+
+<script>
+const productPrice = {{ product.price }};
+const existingSubtotal = {{ cart_subtotal|number_format(2, '.', '') }};
+const deliveryFee = {{ delivery_fee|number_format(2, '.', '') }};
+
+const quantityInput = document.getElementById('quantity');
+const quantitySummary = document.getElementById('summary-quantity');
+const productPriceSummary = document.getElementById('summary-product-price');
+const subtotalSummary = document.getElementById('summary-subtotal');
+const deliverySummary = document.getElementById('summary-delivery');
+const totalSummary = document.getElementById('summary-total');
+const minusBtn = document.getElementById('minusBtn');
+const plusBtn = document.getElementById('plusBtn');
+const addressSection = document.getElementById('addressSection');
+const addressInput = document.getElementById('address');
+
+function money(value) {
+    return '₱' + value.toLocaleString('en-US', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
+
+function updateOrderTotal() {
+    let quantity = parseInt(quantityInput.value) || 1;
+    quantity = Math.max(1, Math.min(50, quantity));
+    quantityInput.value = quantity;
+
+    const productSubtotal = productPrice * quantity;
+    const subtotal = existingSubtotal + productSubtotal;
+
+    const selected = document.querySelector('input[name="order_type"]:checked');
+    const isDelivery = selected && selected.value === 'delivery';
+    const delivery = isDelivery ? deliveryFee : 0;
+
+    quantitySummary.textContent = quantity;
+    productPriceSummary.textContent = money(productSubtotal);
+    subtotalSummary.textContent = money(subtotal);
+    deliverySummary.textContent = money(delivery);
+    totalSummary.textContent = money(subtotal + delivery);
+
+    addressSection.style.display = isDelivery ? '' : 'none';
+    addressInput.required = !!isDelivery;
+}
+
+minusBtn.addEventListener('click', function () {
+    const value = parseInt(quantityInput.value) || 1;
+    if (value > 1) quantityInput.value = value - 1;
+    updateOrderTotal();
+});
+
+plusBtn.addEventListener('click', function () {
+    const value = parseInt(quantityInput.value) || 1;
+    if (value < 50) quantityInput.value = value + 1;
+    updateOrderTotal();
+});
+
+quantityInput.addEventListener('input', updateOrderTotal);
+
+document.querySelectorAll('input[name="order_type"]').forEach(function (radio) {
+    radio.addEventListener('change', updateOrderTotal);
+});
+
+updateOrderTotal();
+</script>
+
+</body>
+</html>

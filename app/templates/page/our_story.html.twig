@@ -1,0 +1,67 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Our Story | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/our-story.css">
+{% endblock %}
+
+{% block body %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">OUR STORY</span>
+        <h1>Born Hungry.<br><span>Built Royal.</span></h1>
+        <p>Burger Queen started with one simple idea: make the everyday burger feel like a little celebration.</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container split">
+        <div class="split-media">
+            <img src="/assets/images/onion.jpg" alt="Burger Queen kitchen food">
+            <img src="/assets/images/vanilla.jpg" alt="Vanilla shake">
+        </div>
+        <div>
+            <span class="eyebrow">THE BEGINNING</span>
+            <h2>Good food should feel generous.</h2>
+            <p>We built Burger Queen around the things people actually want: hot food, generous portions, friendly service and flavors worth coming back for.</p>
+            <p>Our menu keeps the classics close and leaves room for playful seasonal royals. Whether you're grabbing a quick meal or treating the whole table, you deserve food that feels special.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section alt">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">THE ROYAL TIMELINE</span>
+            <h2>A small idea with a big appetite.</h2>
+        </div>
+
+        <div class="timeline">
+            <div class="timeline-item">
+                <strong>01</strong>
+                <div>
+                    <h3>Start with the burger</h3>
+                    <p>We focused on a juicy, reliable burger that could become the foundation of everything else.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <strong>02</strong>
+                <div>
+                    <h3>Add the sides</h3>
+                    <p>Crispy fries and onion rings joined the court because no burger should eat alone.</p>
+                </div>
+            </div>
+            <div class="timeline-item">
+                <strong>03</strong>
+                <div>
+                    <h3>Make it royal</h3>
+                    <p>The Royal Club brought rewards, new flavors and a reason to come back often.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

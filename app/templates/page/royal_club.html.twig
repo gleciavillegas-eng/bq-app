@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Royal Club | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/royal-club.css">
+{% endblock %}
+
+{% block body %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">WELCOME TO THE ROYAL COURT</span>
+
+        <h1>Join The<br><span>Royal Club.</span></h1>
+
+        <p>
+            Earn crowns on every order, unlock exclusive deals,
+            and get early access to new menu drops.
+            Royalty has its privileges.
+        </p>
+
+        <div class="hero-actions">
+            <a class="gold-btn" href="{{ app.user ? '/account' : '/register' }}">
+                {{ app.user ? 'View My Crowns' : 'Join The Club' }}
+            </a>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="rewards">
+    <div class="container split">
+
+        <div>
+            <span class="eyebrow">ROYALTY HAS ITS PRIVILEGES</span>
+            <h2>Get More Rewards</h2>
+            <p>
+                The Royal Club is our way of saying thank you.
+                Every order brings you closer to exclusive rewards
+                and special offers.
+            </p>
+
+            <div class="stats">
+                <div class="stat">
+                    <strong>10</strong>
+                    <span>₱ spent = 1 crown</span>
+                </div>
+                <div class="stat">
+                    <strong>300</strong>
+                    <span>Crowns = free burger</span>
+                </div>
+                <div class="stat">
+                    <strong>VIP</strong>
+                    <span>Members-only drops</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-card" style="text-align: center;">
+            <img src="/assets/images/royalclub.png" alt="Royal Club" style="max-width: 260px; width: 100%;">
+
+            <h3 style="font: 700 32px Fraunces, serif;">Your crown starts here.</h3>
+
+            <p>Sign in or register to keep your crowns across orders.</p>
+
+            <a class="primary-btn" href="{{ app.user ? '/account' : '/register' }}">
+                {{ app.user ? 'My Account' : 'Create Account' }}
+            </a>
+        </div>
+
+    </div>
+</section>
+
+<section class="section alt">
+    <div class="container">
+
+        <div class="section-head">
+            <span class="eyebrow">REWARD TIERS</span>
+            <h2>Every Crown Counts.</h2>
+        </div>
+
+        <div class="products-grid">
+            <div class="content-card">
+                <span class="badge">100 CROWNS</span>
+                <h3 style="font: 700 28px Fraunces, serif;">Free Fries</h3>
+                <p>Trade your crowns for a golden side.</p>
+            </div>
+
+            <div class="content-card">
+                <span class="badge">300 CROWNS</span>
+                <h3 style="font: 700 28px Fraunces, serif;">Free Burger</h3>
+                <p>Claim a royal burger on us.</p>
+            </div>
+
+            <div class="content-card">
+                <span class="badge">500 CROWNS</span>
+                <h3 style="font: 700 28px Fraunces, serif;">Royal Feast</h3>
+                <p>Unlock a special meal reward.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

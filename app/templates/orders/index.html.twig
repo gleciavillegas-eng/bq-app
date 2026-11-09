@@ -1,0 +1,293 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Orders | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/orders.css">
+
+    <style>
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .order-heading-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .delivery-badge,
+        .pickup-badge {
+            padding: 8px 14px;
+            border-radius: 30px;
+            background: #fff8f1;
+            border: 1px solid #ead9cb;
+            color: #7d1f20;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .order-status.pending {
+            background: #fff3cd;
+            color: #8a5a00;
+        }
+
+        .order-status.out-for-delivery {
+            background: #dceeff;
+            color: #0b4f8a;
+        }
+
+        .order-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .order-card-actions .gold-btn {
+            padding: 10px 18px;
+            font-size: 14px;
+        }
+
+        .order-address-box {
+            display: flex;
+            gap: 14px;
+            margin: 20px 0;
+            padding: 16px;
+            background: #fff8f1;
+            border: 1px solid #ead9cb;
+            border-radius: 12px;
+        }
+
+        .address-icon {
+            font-size: 22px;
+        }
+
+        .address-content span {
+            display: block;
+            color: #987d72;
+            font-size: 11px;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .order-total-area {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .order-bottom-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .bottom-action-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 18px;
+            border: 1px solid #7d1f20;
+            border-radius: 9px;
+            color: #7d1f20;
+            text-decoration: none;
+            font-weight: 800;
+            transition: 0.2s ease;
+        }
+
+        .bottom-action-button:hover {
+            background: #7d1f20;
+            color: #fff;
+        }
+
+        .order-card + .order-card {
+            margin-top: 22px;
+        }
+
+        .orders-list {
+            display: block;
+        }
+
+        @media (max-width: 700px) {
+            .orders-hero {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .order-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .order-card-bottom {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+
+<section class="orders-page">
+    <div class="container">
+
+        <div class="orders-hero">
+            <div class="orders-hero-content">
+                <span class="eyebrow">YOUR ROYAL ORDERS</span>
+                <h1>Order History</h1>
+                <p>
+                    Welcome back, <strong>{{ app.user.name }}</strong>.
+                    Here's a look at your royal orders.
+                </p>
+            </div>
+
+            <a href="/menu" class="order-now-button">♛ Order Now →</a>
+        </div>
+
+        <div class="order-stats">
+            <div class="order-stat">
+                <div class="stat-icon">♛</div>
+                <div>
+                    <span>Total Orders</span>
+                    <strong>{{ orders|length }}</strong>
+                </div>
+            </div>
+
+            <div class="order-stat">
+                <div class="stat-icon">⏳</div>
+                <div>
+                    <span>Active Orders</span>
+                    <strong>{{ active_orders }}</strong>
+                </div>
+            </div>
+
+            <div class="order-stat">
+                <div class="stat-icon">✓</div>
+                <div>
+                    <span>Completed</span>
+                    <strong>{{ completed_orders }}</strong>
+                </div>
+            </div>
+
+            <div class="order-stat">
+                <div class="stat-icon">₱</div>
+                <div>
+                    <span>Total Spent</span>
+                    <strong>₱{{ total_spent|number_format(2) }}</strong>
+                </div>
+            </div>
+        </div>
+
+        <div class="orders-section">
+            <div class="section-title">
+                <div>
+                    <span class="eyebrow">MY ORDERS</span>
+                    <h2>Your Order History</h2>
+                </div>
+            </div>
+
+            {% if orders is empty %}
+
+                <div class="empty-orders">
+                    <div class="empty-crown">♛</div>
+                    <h2>No Orders Yet</h2>
+                    <p>
+                        Your royal table is waiting.
+                        Explore our menu and place your first order today.
+                    </p>
+                    <a href="/menu" class="order-now-button">🍔 Explore Menu →</a>
+                </div>
+
+            {% else %}
+
+                <div class="orders-list">
+                    {% for order in orders %}
+                        {% set is_delivery = order.orderType|lower == 'delivery' %}
+                        {% set count = order.items|length %}
+
+                        <article class="order-card">
+
+                            <div class="order-card-header">
+                                <div class="order-heading-left">
+                                    <span class="order-label">ORDER # {{ order.id }}</span>
+                                    <span class="order-status {{ order.status|lower|replace({' ': '-'}) }}">{{ order.status }}</span>
+                                </div>
+
+                                {% if is_delivery %}
+                                    <span class="delivery-badge">🛵 Delivery</span>
+                                {% else %}
+                                    <span class="pickup-badge">🏪 Pickup</span>
+                                {% endif %}
+                            </div>
+
+                            <div class="order-card-actions">
+                                <a href="/receipt/{{ order.id }}" class="gold-btn">🧾 Receipt</a>
+
+                                {% if is_delivery %}
+                                    <a href="/track-order/{{ order.id }}" class="gold-btn">🛵 Track Order</a>
+                                {% endif %}
+                            </div>
+
+                            <div class="order-information">
+                                <div class="order-info">
+                                    <span>DATE</span>
+                                    <strong>{{ order.createdAt|date('F d, Y', 'Asia/Manila') }}</strong>
+                                </div>
+
+                                <div class="order-info">
+                                    <span>TIME</span>
+                                    <strong>{{ order.createdAt|date('h:i A', 'Asia/Manila') }}</strong>
+                                </div>
+
+                                <div class="order-info">
+                                    <span>ORDER TYPE</span>
+                                    <strong>{{ order.orderType|capitalize }}</strong>
+                                </div>
+
+                                <div class="order-info">
+                                    <span>ITEMS</span>
+                                    <strong>{{ count }} item{{ count != 1 ? 's' : '' }}</strong>
+                                </div>
+                            </div>
+
+                            {% if is_delivery %}
+                                <div class="order-address-box">
+                                    <div class="address-icon">📍</div>
+                                    <div class="address-content">
+                                        <span>DELIVERY LOCATION</span>
+                                        <strong>{{ order.address }}</strong>
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                            <div class="order-card-bottom">
+                                <div class="order-total-area">
+                                    <span>ORDER TOTAL</span>
+                                    <strong class="order-price">₱{{ order.total|number_format(2) }}</strong>
+                                </div>
+
+                                <div class="order-bottom-buttons">
+                                    <a href="/order-details/{{ order.id }}" class="bottom-action-button">👁 View Details →</a>
+
+                                    {% if is_delivery %}
+                                        <a href="/track-order/{{ order.id }}" class="bottom-action-button">📍 View Location</a>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                        </article>
+                    {% endfor %}
+                </div>
+
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

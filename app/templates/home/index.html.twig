@@ -1,0 +1,105 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Burger Queen | Home{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/pages/home.css">
+{% endblock %}
+
+{% block body %}
+
+<section class="hero">
+    <div class="container hero-grid">
+
+        <div class="hero-content">
+            <span class="eyebrow">THE ROYAL BURGER HOUSE</span>
+
+            <h1>
+                Big Flavor.<br>
+                <span>Royal Attitude.</span>
+            </h1>
+
+            <p>
+                Flame-grilled burgers, golden sides and creamy shakes
+                made for people who know exactly what they want.
+            </p>
+
+            <div class="hero-actions">
+                <a class="gold-btn" href="/royal-club">Join Royal Club</a>
+            </div>
+        </div>
+
+        <div class="hero-art">
+            <img class="hero-main" src="/assets/images/vanilla.jpg" alt="Vanilla shake">
+            <img class="hero-side" src="/assets/images/royalfries.jpg" alt="Royal fries">
+            <div class="hero-crown">♛</div>
+        </div>
+
+    </div>
+</section>
+
+<div class="wave">
+    <svg viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0,64 C240,120 480,0 720,64 C960,128 1200,8 1440,64 L1440,120 L0,120 Z"></path>
+    </svg>
+</div>
+
+<section class="section">
+    <div class="container">
+
+        <div class="section-head">
+            <span class="eyebrow">WHAT'S REIGNING</span>
+            <h2>Royal Favorites</h2>
+            <p>The crowd-pleasers that keep the crown moving.</p>
+        </div>
+
+        <div class="products-grid">
+            {% for product in products %}
+                {% include 'partials/product_card.html.twig' %}
+            {% else %}
+                <div class="empty-products">
+                    <p>No royal favorites are available yet.</p>
+                </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+
+<section class="section alt">
+    <div class="container">
+        <div class="section-head">
+            <span class="eyebrow">MADE FOR THE CROWN</span>
+            <h2>Burgers Worth Wearing a Crown For</h2>
+            <p>
+                Every Burger Queen creation is made with bold flavors,
+                golden sides and royal attitude.
+            </p>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+
+        <div class="section-head">
+            <span class="eyebrow">RULE THE ROYAL CLUB</span>
+            <h2>Earn Crowns. Get Rewarded.</h2>
+            <p>
+                Join the Royal Club and start earning crowns with every
+                royal order.
+            </p>
+        </div>
+
+        <div class="hero-actions">
+            {% if app.user %}
+                <a class="gold-btn" href="/account">My Royal Club</a>
+            {% else %}
+                <a class="gold-btn" href="/register">Join Royal Club</a>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

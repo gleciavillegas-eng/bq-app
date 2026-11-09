@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#7D1F20">
+    <title>{% block title %}Burger Queen{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/site.css">
+    <link rel="stylesheet" href="/assets/css/products.css">
+    {% block page_css %}{% endblock %}
+</head>
+<body>
+
+<header class="site-header">
+    <div class="nav container">
+
+        <a href="/" class="brand" aria-label="Burger Queen Home">
+            <span class="brand-crown">♛</span>
+            <span class="brand-name">BURGER <b>QUEEN</b></span>
+        </a>
+
+        <button type="button" class="nav-toggle" id="navToggle" aria-label="Open navigation" aria-expanded="false">☰</button>
+
+        {% set route = app.current_route %}
+
+        <nav class="main-navigation" id="mainNavigation" aria-label="Main Navigation">
+            <ul class="nav-links">
+                <li><a href="/" class="{{ route == 'app_home' ? 'active' : '' }}">Home</a></li>
+                <li><a href="/royal-club" class="{{ route == 'app_royal_club' ? 'active' : '' }}">Royal Club</a></li>
+                <li><a href="/menu" class="{{ route == 'app_menu' ? 'active' : '' }}">Menu</a></li>
+                <li><a href="/our-story" class="{{ route == 'app_our_story' ? 'active' : '' }}">Our Story</a></li>
+                <li><a href="/contact" class="{{ route == 'app_contact' ? 'active' : '' }}">Contact</a></li>
+                <a href="/orders" class="orders-nav-link {{ route == 'app_orders' ? 'active' : '' }}">
+                    <span class="orders-nav-icon">♛</span>
+                    <span>Orders</span>
+                </a>
+            </ul>
+
+            <div class="mobile-nav-actions">
+                {% if app.user %}
+                    <a href="/orders" class="mobile-nav-link">My Orders</a>
+                    <a href="/account" class="mobile-nav-link">Account</a>
+                    <a href="/logout" class="mobile-nav-logout">Log Out</a>
+                {% else %}
+                    <a href="/login" class="mobile-nav-link">Log In</a>
+                {% endif %}
+            </div>
+        </nav>
+
+        <div class="nav-actions">
+            {% if app.user %}
+                <a href="/account" class="account-link {{ route == 'app_account' ? 'active' : '' }}">
+                    Hi, {{ app.user.name|split(' ')|first }}
+                </a>
+                <a href="/logout" class="nav-cta">Log Out</a>
+            {% else %}
+                <a href="/login" class="account-link">Log In</a>
+                <a href="/menu" class="nav-cta">Order Now</a>
+            {% endif %}
+        </div>
+
+    </div>
+</header>
+
+{% for type, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="flash {{ type }}">{{ message }}</div>
+    {% endfor %}
+{% endfor %}
+
+<main>
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="container footer-grid">
+
+        <div class="footer-column">
+            <a class="brand footer-brand" href="/">
+                <span class="brand-crown">♛</span>
+                <span>BURGER <b>QUEEN</b></span>
+            </a>
+            <p>Bold burgers. Golden sides. Royal treatment.</p>
+            <p class="muted">hello@burgerqueen.co<br>+63 912 345 6789</p>
+        </div>
+
+        <div class="footer-column">
+            <h4>MENU</h4>
+            <a href="/menu#burgers">Burgers</a>
+            <a href="/menu#sides">Sides</a>
+            <a href="/menu#shakes">Shakes</a>
+            <a href="/menu#meals">Meals</a>
+        </div>
+
+        <div class="footer-column">
+            <h4>QUICK LINKS</h4>
+            <a href="/our-story">Our Story</a>
+            <a href="/contact">Contact</a>
+            <a href="/royal-club">Royal Club</a>
+        </div>
+
+        <div class="footer-column">
+            <h4>ORDER</h4>
+            <a href="/menu">Start an Order</a>
+            <a href="/account">My Account</a>
+        </div>
+
+    </div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const toggle = document.getElementById('navToggle');
+    const navigation = document.getElementById('mainNavigation');
+    if (!toggle || !navigation) return;
+
+    toggle.addEventListener('click', function () {
+        const isOpen = navigation.classList.toggle('open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    navigation.querySelectorAll('a').forEach(function (link) {
+        link.addEventListener('click', function () {
+            navigation.classList.remove('open');
+            toggle.setAttribute('aria-expanded', 'false');
+        });
+    });
+});
+</script>
+
+<script src="/assets/js/app.js"></script>
+</body>
+</html>

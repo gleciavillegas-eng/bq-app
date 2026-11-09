@@ -1,0 +1,238 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Admin Dashboard | Burger Queen{% endblock %}
+
+{% block admin_icon %}⌂{% endblock %}
+{% block admin_heading %}Dashboard{% endblock %}
+{% block admin_subtitle %}Your royal command center at a glance.{% endblock %}
+
+{% block admin_content %}
+
+<div class="dashboard-content">
+
+    <section class="dashboard-hero">
+        <div class="hero-glow hero-glow-one"></div>
+        <div class="hero-glow hero-glow-two"></div>
+        <div class="hero-line"></div>
+
+        <div class="hero-copy">
+            <div class="hero-badge">
+                <span class="hero-badge-icon">♛</span>
+                <span>ROYAL COMMAND CENTER</span>
+            </div>
+
+            <h2>Welcome back, <strong>{{ app.user.name }}</strong></h2>
+
+            <p>
+                Manage your Burger Queen kingdom from one clean control center.
+                Keep products, customers, messages, and operations moving smoothly.
+            </p>
+
+            <div class="hero-actions">
+                <a href="/admin/products" class="hero-button hero-button-primary">
+                    <span>Manage Products</span>
+                    <b>→</b>
+                </a>
+
+                <a href="/admin/orders" class="hero-button hero-button-secondary">
+                    <span>View Orders</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="hero-emblem" aria-hidden="true">
+            <div class="hero-emblem-outer">
+                <div class="hero-emblem-inner"><span>♛</span></div>
+            </div>
+            <div class="hero-emblem-text">BURGER<br>QUEEN</div>
+        </div>
+    </section>
+
+    <section class="dashboard-section">
+        <div class="section-heading">
+            <div>
+                <span class="section-kicker">OVERVIEW</span>
+                <h2>Kingdom at a glance</h2>
+            </div>
+
+            <div class="section-live">
+                <span class="live-indicator"></span>
+                <span>Live dashboard</span>
+            </div>
+        </div>
+
+        <div class="dashboard-stats">
+
+            <a href="/admin/customers" class="dashboard-stat">
+                <div class="stat-top">
+                    <div class="stat-icon stat-icon-wine">♙</div>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Users</span>
+                    <strong>{{ total_users|number_format }}</strong>
+                    <small>All registered accounts</small>
+                </div>
+                <span class="stat-number-mark">01</span>
+            </a>
+
+            <a href="/admin/customers" class="dashboard-stat">
+                <div class="stat-top">
+                    <div class="stat-icon stat-icon-gold">♕</div>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Customers</span>
+                    <strong>{{ total_customers|number_format }}</strong>
+                    <small>Royal customer accounts</small>
+                </div>
+                <span class="stat-number-mark">02</span>
+            </a>
+
+            <a href="/admin/messages" class="dashboard-stat">
+                <div class="stat-top">
+                    <div class="stat-icon stat-icon-dark">✉</div>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Messages</span>
+                    <strong>{{ total_messages|number_format }}</strong>
+                    <small>Customer inquiries</small>
+                </div>
+                <span class="stat-number-mark">03</span>
+            </a>
+
+            <a href="/admin/messages" class="dashboard-stat dashboard-stat-featured">
+                <div class="stat-top">
+                    <div class="stat-icon stat-icon-light">★</div>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">New This Week</span>
+                    <strong>{{ recent_messages|number_format }}</strong>
+                    <small>Messages in the last 7 days</small>
+                </div>
+                <span class="stat-number-mark">04</span>
+            </a>
+
+        </div>
+    </section>
+
+    <section class="dashboard-grid">
+
+        <article class="dashboard-panel quick-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="section-kicker">MANAGEMENT</span>
+                    <h2>Quick actions</h2>
+                </div>
+                <div class="panel-crown">♛</div>
+            </div>
+
+            <div class="quick-action-list">
+
+                <a href="/admin/products" class="quick-action">
+                    <span class="quick-action-icon">+</span>
+                    <span class="quick-action-copy">
+                        <strong>Manage Products</strong>
+                        <small>Add, edit, or remove menu items</small>
+                    </span>
+                    <span class="quick-action-arrow">→</span>
+                </a>
+
+                <a href="/admin/orders" class="quick-action">
+                    <span class="quick-action-icon">▤</span>
+                    <span class="quick-action-copy">
+                        <strong>Manage Orders</strong>
+                        <small>View and update customer orders</small>
+                    </span>
+                    <span class="quick-action-arrow">→</span>
+                </a>
+
+                <a href="/admin/customers" class="quick-action">
+                    <span class="quick-action-icon">♙</span>
+                    <span class="quick-action-copy">
+                        <strong>View Customers</strong>
+                        <small>Manage registered customers</small>
+                    </span>
+                    <span class="quick-action-arrow">→</span>
+                </a>
+
+                <a href="/admin/messages" class="quick-action">
+                    <span class="quick-action-icon">✉</span>
+                    <span class="quick-action-copy">
+                        <strong>Customer Messages</strong>
+                        <small>Read customer inquiries</small>
+                    </span>
+                    {% if recent_messages > 0 %}
+                        <span class="quick-action-count">{{ recent_messages|number_format }}</span>
+                    {% endif %}
+                    <span class="quick-action-arrow">→</span>
+                </a>
+
+            </div>
+        </article>
+
+        <article class="dashboard-panel messages-panel">
+            <div class="panel-heading">
+                <div>
+                    <span class="section-kicker">CUSTOMER CARE</span>
+                    <h2>Recent messages</h2>
+                </div>
+                <a href="/admin/messages" class="panel-link">View all <span>→</span></a>
+            </div>
+
+            {% if recent_contacts %}
+                <div class="message-list">
+                    {% for contact in recent_contacts %}
+                        <a href="/admin/messages" class="message-row">
+                            <div class="message-avatar">{{ contact.name|first|upper }}</div>
+
+                            <div class="message-body">
+                                <div class="message-title">
+                                    <strong>{{ contact.name }}</strong>
+                                    <time>{{ contact.createdAt|date('M d', 'Asia/Manila') }}</time>
+                                </div>
+
+                                <span class="message-email">{{ contact.email }}</span>
+
+                                <p>{{ contact.message|length > 92 ? contact.message|slice(0, 92) ~ '…' : contact.message }}</p>
+                            </div>
+
+                            <span class="message-arrow">›</span>
+                        </a>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="empty-messages">
+                    <div class="empty-message-icon">✉</div>
+                    <h3>Your inbox is quiet.</h3>
+                    <p>Customer messages will appear here as soon as they contact Burger Queen.</p>
+                    <a href="/contact" class="empty-button">Open Contact Page <span>→</span></a>
+                </div>
+            {% endif %}
+        </article>
+
+    </section>
+
+    <section class="dashboard-bottom-card">
+        <div class="bottom-card-decoration">♛</div>
+
+        <div class="bottom-card-content">
+            <span class="section-kicker">THE BURGER QUEEN STANDARD</span>
+            <h2>Keep the kingdom running beautifully.</h2>
+            <p>
+                Fast service, clean products, happy customers,
+                and an admin panel that keeps everything within reach.
+            </p>
+        </div>
+
+        <div class="bottom-card-actions">
+            <a href="/admin/products" class="bottom-button bottom-button-primary">Manage Products <span>→</span></a>
+            <a href="/" class="bottom-button">Visit Website <span>↗</span></a>
+        </div>
+    </section>
+
+</div>
+
+{% endblock %}

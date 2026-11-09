@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Order | Burger Queen</title>
+
+    <link rel="stylesheet" href="/assets/css/base.css">
+    <link rel="stylesheet" href="/assets/css/pages/order-now.css">
+    <link rel="stylesheet" href="/assets/css/pages/order-confirm.css">
+
+    <style>
+        .order-step.completed {
+            border-color: var(--gold);
+        }
+
+        .order-step.completed .step-number {
+            background: var(--wine);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+
+<header class="order-topbar">
+    <div class="order-topbar-inner">
+        <a href="/order-now?product={{ first_product }}" class="back-menu-btn">← Edit Order</a>
+        <div class="order-brand">BURGER <span>QUEEN</span></div>
+        <a href="/menu" class="back-menu-btn">+ Add Another</a>
+    </div>
+</header>
+
+<main class="order-page">
+<div class="order-container">
+
+    <div class="order-heading">
+        <span class="order-eyebrow">STEP 2 • REVIEW</span>
+        <h1>Review Your Order</h1>
+        <p>Please check your order before placing it.</p>
+    </div>
+
+    <div class="order-steps">
+        <div class="order-step completed">
+            <div class="step-number">✓</div>
+            <div class="step-text"><strong>Build Order</strong><small>Choose your food</small></div>
+        </div>
+        <div class="order-step active">
+            <div class="step-number">2</div>
+            <div class="step-text"><strong>Review</strong><small>Check everything</small></div>
+        </div>
+        <div class="order-step">
+            <div class="step-number">3</div>
+            <div class="step-text"><strong>Receipt</strong><small>Order confirmed</small></div>
+        </div>
+    </div>
+
+    <div class="review-notice">
+        <strong>👑 Almost there!</strong>
+        <br><br>
+        Your order has not been placed yet.
+        Please review your items and customer information.
+    </div>
+
+    {% if error %}
+        <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+    <div class="review-grid">
+
+        {# ---------- ITEMS ---------- #}
+        <div class="card">
+            <div class="card-header">
+                <h2>🛍️ Your Selected Items</h2>
+            </div>
+
+            <div class="card-body">
+
+                {% for key, item in cart %}
+                    <div class="review-item">
+                        <div class="review-image">
+                            {% if item.product_image %}
+                                <img src="/{{ item.product_image }}" alt="{{ item.product_name }}">
+                            {% else %}
+                                🍔
+                            {% endif %}
+                        </div>
+
+                        <div class="review-info">
+                            <h3>{{ item.product_name }}</h3>
+                            <p>Quantity: {{ item.quantity }}</p>
+                            <div class="review-price">₱{{ item.product_price|number_format(2) }} each</div>
+
+                            <form method="post" action="{{ path('app_order_remove', {id: key}) }}" style="margin-top: 8px;" onsubmit="return confirm('Remove this item from your order?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('remove_item') }}">
+                                <button type="submit" style="background: none; border: 0; padding: 0; color: #b3261e; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; text-decoration: underline;">Remove</button>
+                            </form>
+                        </div>
+
+                        <div class="review-total">₱{{ (item.product_price * item.quantity)|number_format(2) }}</div>
+                    </div>
+                {% endfor %}
+
+                <div class="info-row">
+                    <span>Subtotal</span>
+                    <strong>₱{{ subtotal|number_format(2) }}</strong>
+                </div>
+
+                <div class="info-row">
+                    <span>Delivery Fee</span>
+                    <strong>₱{{ delivery_fee|number_format(2) }}</strong>
+                </div>
+
+                <div class="total-box">
+                    <span>GRAND TOTAL</span>
+                    <strong>₱{{ total|number_format(2) }}</strong>
+                </div>
+
+            </div>
+        </div>
+
+        {# ---------- CUSTOMER ---------- #}
+        <div>
+            <div class="card">
+                <div class="card-header">
+                    <h2>👤 Customer Information</h2>
+                </div>
+
+                <div class="card-body">
+                    <div class="info-row">
+                        <span>Name</span>
+                        <strong>{{ customer_name }}</strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Email</span>
+                        <strong>{{ email }}</strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Phone</span>
+                        <strong>{{ phone }}</strong>
+                    </div>
+
+                    <div class="info-row">
+                        <span>Order Type</span>
+                        <strong>{{ order_type == 'delivery' ? '🛵 Delivery' : '🏪 Pickup' }}</strong>
+                    </div>
+
+                    {% if order_type == 'delivery' %}
+                        <div class="info-row">
+                            <span>Address</span>
+                            <strong>{{ address|nl2br }}</strong>
+                        </div>
+                    {% endif %}
+
+                    <div class="info-row">
+                        <span>Payment</span>
+                        <strong>{{ payment_method }}</strong>
+                    </div>
+
+                    {% if notes %}
+                        <div class="info-row">
+                            <span>Notes</span>
+                            <strong>{{ notes|nl2br }}</strong>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <form method="post" action="{{ path('app_order_confirm') }}" onsubmit="return confirm('Are you sure you want to confirm and place this order?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('place_order') }}">
+
+                <div class="actions">
+                    <a href="/order-now?product={{ first_product }}" class="action-btn edit-btn">← Edit Order</a>
+                    <button type="submit" class="action-btn confirm-btn">✓ Confirm &amp; Place Order</button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</div>
+</main>
+
+</body>
+</html>

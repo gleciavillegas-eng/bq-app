@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Burger Queen Admin{% endblock %}</title>
+
+    <link rel="stylesheet" href="/assets/css/admin-sidebar.css">
+    <link rel="stylesheet" href="/assets/css/admin-dashboard.css">
+    {% block page_css %}{% endblock %}
+</head>
+<body>
+
+{% set path = app.request.pathInfo %}
+
+<div class="admin-page">
+
+    {# ---------- SIDEBAR ---------- #}
+    <aside class="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
+
+        <div class="admin-brand">
+            <div class="admin-brand-crown"><span>♛</span></div>
+            <div class="admin-brand-text">
+                <strong>BURGER <span>QUEEN</span></strong>
+                <small>ADMIN PANEL</small>
+            </div>
+        </div>
+
+        <nav class="admin-navigation">
+
+            <div class="admin-nav-label">
+                <span></span>
+                <span class="admin-nav-label-text">MAIN MENU</span>
+                <span></span>
+            </div>
+
+            <a href="/admin/dashboard" class="admin-nav-item {{ path starts with '/admin/dashboard' ? 'active' : '' }}">
+                <span class="nav-icon"><span>⌂</span></span>
+                <span class="nav-text">Dashboard</span>
+                {% if path starts with '/admin/dashboard' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+            </a>
+
+            <a href="/admin/products" class="admin-nav-item {{ path starts with '/admin/products' ? 'active' : '' }}">
+                <span class="nav-icon"><span>▣</span></span>
+                <span class="nav-text">Products</span>
+                {% if path starts with '/admin/products' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+            </a>
+
+            <a href="/admin/orders" class="admin-nav-item {{ path starts with '/admin/orders' ? 'active' : '' }}">
+                <span class="nav-icon"><span>▤</span></span>
+                <span class="nav-text">Orders</span>
+                {% if path starts with '/admin/orders' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+            </a>
+
+            <a href="/admin/customers" class="admin-nav-item {{ path starts with '/admin/customers' ? 'active' : '' }}">
+                <span class="nav-icon"><span>♙</span></span>
+                <span class="nav-text">Customers</span>
+                {% if path starts with '/admin/customers' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+            </a>
+
+            <a href="/admin/messages" class="admin-nav-item {{ path starts with '/admin/messages' ? 'active' : '' }}">
+                <span class="nav-icon"><span>✉</span></span>
+                <span class="nav-text">Messages</span>
+                {% if path starts with '/admin/messages' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+            </a>
+
+            <div class="admin-nav-divider" aria-hidden="true"></div>
+
+            <div class="admin-nav-label secondary-label">
+                <span></span>
+                <span class="admin-nav-label-text">ACCOUNT</span>
+                <span></span>
+            </div>
+
+            <a href="/" class="admin-nav-item">
+                <span class="nav-icon"><span>◉</span></span>
+                <span class="nav-text">View Website</span>
+                <span class="nav-external" aria-hidden="true">↗</span>
+            </a>
+
+            <a href="/logout" class="admin-nav-item logout-item" onclick="return confirm('Are you sure you want to log out?');">
+                <span class="nav-icon logout-icon"><span>↪</span></span>
+                <span class="nav-text">Log Out</span>
+            </a>
+
+        </nav>
+
+        <div class="admin-sidebar-footer">
+            <div class="sidebar-crown">♛</div>
+            <div class="sidebar-footer-text">
+                <strong>Royal Court</strong>
+                <span>Administrator</span>
+            </div>
+        </div>
+
+    </aside>
+
+    {# ---------- MAIN ---------- #}
+    <main class="admin-main">
+
+        <header class="dashboard-topbar">
+            <div class="topbar-left">
+
+                <button type="button" class="mobile-menu-button" aria-label="Open navigation" aria-controls="admin-sidebar" aria-expanded="false">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+
+                <div class="topbar-page-info">
+                    <div class="topbar-breadcrumb">
+                        <span class="topbar-brand-mark">♛</span>
+                        <span>BURGER QUEEN</span>
+                        <b>/</b>
+                        <span>ADMIN</span>
+                    </div>
+
+                    <div class="topbar-heading-row">
+                        <div class="topbar-heading-icon">
+                            <span>{% block admin_icon %}⌂{% endblock %}</span>
+                        </div>
+                        <div>
+                            <h1>{% block admin_heading %}Dashboard{% endblock %}</h1>
+                            <p>{% block admin_subtitle %}{% endblock %}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="topbar-actions">
+                <a href="/" class="dashboard-view-site" aria-label="View Burger Queen website">
+                    <span class="action-icon">↗</span>
+                    <span class="action-text">View Website</span>
+                </a>
+
+                <span class="topbar-divider"></span>
+
+                <div class="admin-user-card">
+                    <div class="admin-user-avatar">
+                        <span>{{ app.user.name|first|upper }}</span>
+                        <i class="admin-online-indicator"></i>
+                    </div>
+
+                    <div class="admin-user-copy">
+                        <strong>{{ app.user.name }}</strong>
+                        <span><i></i> Administrator</span>
+                    </div>
+
+                    <span class="profile-chevron">▾</span>
+                </div>
+            </div>
+        </header>
+
+        {% block admin_content %}{% endblock %}
+
+        <footer class="admin-footer">
+            <div class="footer-brand">
+                <span>♛</span>
+                <strong>BURGER QUEEN</strong>
+            </div>
+
+            <div class="footer-separator"></div>
+
+            <span>Administration Panel</span>
+
+            <span class="footer-right">Serving the Royal Court with pride.</span>
+        </footer>
+
+    </main>
+</div>
+
+<script>
+(function () {
+    const menuButton = document.querySelector('.mobile-menu-button');
+    const sidebar = document.querySelector('.admin-sidebar');
+
+    if (!menuButton || !sidebar) {
+        return;
+    }
+
+    menuButton.addEventListener('click', function () {
+        const isOpen = sidebar.classList.toggle('is-open');
+        menuButton.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        document.body.classList.toggle('sidebar-open', isOpen);
+    });
+
+    document.addEventListener('click', function (event) {
+        if (!sidebar.classList.contains('is-open')) {
+            return;
+        }
+
+        if (!sidebar.contains(event.target) && !menuButton.contains(event.target)) {
+            sidebar.classList.remove('is-open');
+            menuButton.setAttribute('aria-expanded', 'false');
+            document.body.classList.remove('sidebar-open');
+        }
+    });
+})();
+</script>
+
+{% block admin_scripts %}{% endblock %}
+
+</body>
+</html>
