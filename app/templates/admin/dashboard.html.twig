@@ -63,9 +63,9 @@
 
         <div class="dashboard-stats">
 
-            <a href="/admin/customers" class="dashboard-stat">
+            <a href="/admin/users" class="dashboard-stat">
                 <div class="stat-top">
-                    <div class="stat-icon stat-icon-wine">♙</div>
+                    <div class="stat-icon stat-icon-wine">♕</div>
                     <span class="stat-arrow">↗</span>
                 </div>
                 <div class="stat-info">
@@ -76,41 +76,41 @@
                 <span class="stat-number-mark">01</span>
             </a>
 
-            <a href="/admin/customers" class="dashboard-stat">
+            <a href="/admin/users?role=staff" class="dashboard-stat">
                 <div class="stat-top">
-                    <div class="stat-icon stat-icon-gold">♕</div>
+                    <div class="stat-icon stat-icon-gold">✦</div>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Staff</span>
+                    <strong>{{ total_staff|number_format }}</strong>
+                    <small>Staff accounts</small>
+                </div>
+                <span class="stat-number-mark">02</span>
+            </a>
+
+            <a href="/admin/products" class="dashboard-stat">
+                <div class="stat-top">
+                    <div class="stat-icon stat-icon-dark">▣</div>
+                    <span class="stat-arrow">↗</span>
+                </div>
+                <div class="stat-info">
+                    <span class="stat-label">Total Records</span>
+                    <strong>{{ total_records|number_format }}</strong>
+                    <small>Products on the menu</small>
+                </div>
+                <span class="stat-number-mark">03</span>
+            </a>
+
+            <a href="/admin/customers" class="dashboard-stat dashboard-stat-featured">
+                <div class="stat-top">
+                    <div class="stat-icon stat-icon-light">♙</div>
                     <span class="stat-arrow">↗</span>
                 </div>
                 <div class="stat-info">
                     <span class="stat-label">Customers</span>
                     <strong>{{ total_customers|number_format }}</strong>
                     <small>Royal customer accounts</small>
-                </div>
-                <span class="stat-number-mark">02</span>
-            </a>
-
-            <a href="/admin/messages" class="dashboard-stat">
-                <div class="stat-top">
-                    <div class="stat-icon stat-icon-dark">✉</div>
-                    <span class="stat-arrow">↗</span>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-label">Total Messages</span>
-                    <strong>{{ total_messages|number_format }}</strong>
-                    <small>Customer inquiries</small>
-                </div>
-                <span class="stat-number-mark">03</span>
-            </a>
-
-            <a href="/admin/messages" class="dashboard-stat dashboard-stat-featured">
-                <div class="stat-top">
-                    <div class="stat-icon stat-icon-light">★</div>
-                    <span class="stat-arrow">↗</span>
-                </div>
-                <div class="stat-info">
-                    <span class="stat-label">New This Week</span>
-                    <strong>{{ recent_messages|number_format }}</strong>
-                    <small>Messages in the last 7 days</small>
                 </div>
                 <span class="stat-number-mark">04</span>
             </a>

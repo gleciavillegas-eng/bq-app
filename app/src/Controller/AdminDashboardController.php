@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\ContactMessage;
+use App\Entity\Product;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -28,7 +29,9 @@ class AdminDashboardController extends AbstractController
 
         return $this->render('admin/dashboard.html.twig', [
             'total_users' => $users->count([]),
+            'total_staff' => $users->count(['role' => 'staff']),
             'total_customers' => $users->count(['role' => 'customer']),
+            'total_records' => $em->getRepository(Product::class)->count([]),
             'total_messages' => $messages->count([]),
             'recent_messages' => $recentMessages,
             'recent_contacts' => $messages->findBy([], ['createdAt' => 'DESC'], 5),

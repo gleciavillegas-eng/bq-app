@@ -12,6 +12,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(name: 'users')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
+    public const ROLE_ADMIN = 'admin';
+    public const ROLE_STAFF = 'staff';
+    public const ROLE_CUSTOMER = 'customer';
+
+    public const STATUS_ACTIVE = 'active';
+    public const STATUS_DISABLED = 'disabled';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -32,9 +39,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 40)]
     private ?string $phone = null;
 
-    // 'customer' o 'admin' (pareho sa karaan nga database)
+    // 'admin', 'staff', o 'customer'
     #[ORM\Column(length: 20)]
-    private string $role = 'customer';
+    private string $role = self::ROLE_CUSTOMER;
+
+    // 'active' o 'disabled'
+    #[ORM\Column(length: 20, options: ['default' => 'active'])]
+    private string $status = self::STATUS_ACTIVE;
 
     #[ORM\Column(options: ['default' => 0])]
     private int $crowns = 0;
@@ -67,6 +78,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRole(): string { return $this->role; }
     public function setRole(string $role): static { $this->role = $role; return $this; }
 
+    public function getStatus(): string { return $this->status; }
+    public function setStatus(string $status): static { $this->status = $status; return $this; }
+    public function isActive(): bool { return $this->status === self::STATUS_ACTIVE; }
+
     public function getCrowns(): int { return $this->crowns; }
     public function setCrowns(int $crowns): static { $this->crowns = $crowns; return $this; }
 
@@ -81,9 +96,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getRoles(): array
     {
-        return $this->role === 'admin'
-            ? ['ROLE_ADMIN', 'ROLE_USER']
-            : ['ROLE_USER'];
+        return match ($this->role) {
+            self::ROLE_ADMIN => ['ROLE_ADMIN', 'ROLE_USER'],
+            self::ROLE_STAFF => ['ROLE_STAFF', 'ROLE_USER'],
+            default => ['ROLE_USER'],
+        };
     }
 
     public function eraseCredentials(): void

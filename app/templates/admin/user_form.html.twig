@@ -1,0 +1,161 @@
+{% extends 'admin/base.html.twig' %}
+
+{% set is_new = mode == 'new' %}
+
+{% block title %}{{ is_new ? 'Create Account' : 'Edit Account' }} | Burger Queen Admin{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-products-page.css">
+
+    <style>
+        .user-form-wrap {
+            max-width: 760px;
+            margin: 0 auto;
+        }
+
+        .user-form-errors {
+            margin: 0 0 20px;
+            padding: 14px 18px 14px 36px;
+            border: 1px solid #efbcbc;
+            border-radius: 14px;
+            background: #fbe7e7;
+            color: #8a2a2d;
+        }
+
+        .user-form-note {
+            margin: 6px 0 0;
+            color: #88756d;
+            font-size: 12px;
+        }
+
+        .user-form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+        }
+
+        .user-form-grid .full {
+            grid-column: 1 / -1;
+        }
+
+        .products-field input[type="email"],
+        .products-field input[type="password"],
+        .products-field input[type="tel"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dcc6b7;
+            border-radius: 12px;
+            background: #fffaf6;
+            color: #251817;
+            font: inherit;
+        }
+
+        .products-field input:disabled,
+        .products-field select:disabled {
+            background: #f1e4d8;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 700px) {
+            .user-form-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+{% endblock %}
+
+{% block admin_icon %}♕{% endblock %}
+{% block admin_heading %}{{ is_new ? 'Create Account' : 'Edit Account' }}{% endblock %}
+{% block admin_subtitle %}{{ is_new ? 'Add a new admin or staff account.' : 'Update the account details or reset the password.' }}{% endblock %}
+
+{% block admin_content %}
+
+<div class="products-content">
+<div class="user-form-wrap">
+
+    <article class="products-form-panel">
+
+        <div class="products-panel-heading">
+            <div>
+                <span class="products-section-kicker">{{ is_new ? 'NEW ACCOUNT' : 'EDIT ACCOUNT' }}</span>
+                <h2>{{ is_new ? 'Create Account' : 'Edit @' ~ user.username }}</h2>
+            </div>
+            <div class="products-panel-icon">{{ is_new ? '+' : '✎' }}</div>
+        </div>
+
+        <form method="post" class="products-form" novalidate>
+
+            {% if errors %}
+                <ul class="user-form-errors">
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <input type="hidden" name="_token" value="{{ csrf_token('admin_user_form') }}">
+
+            <div class="user-form-grid">
+
+                <div class="products-field">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" value="{{ data.name }}" maxlength="120" required>
+                </div>
+
+                <div class="products-field">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" value="{{ data.username }}" maxlength="30" required>
+                </div>
+
+                <div class="products-field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ data.email }}" maxlength="190" required>
+                </div>
+
+                <div class="products-field">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" value="{{ data.phone }}" maxlength="40">
+                </div>
+
+                <div class="products-field">
+                    <label for="role">Role</label>
+                    <select id="role" name="role" {{ is_self ? 'disabled' : '' }}>
+                        {% for role in roles %}
+                            <option value="{{ role }}" {{ data.role == role ? 'selected' : '' }}>{{ role|capitalize }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if is_self %}
+                        <p class="user-form-note">You cannot change your own role.</p>
+                    {% endif %}
+                </div>
+
+                <div class="products-field">
+                    <label for="status">Status</label>
+                    <select id="status" name="status" {{ is_self ? 'disabled' : '' }}>
+                        <option value="active" {{ data.status == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="disabled" {{ data.status == 'disabled' ? 'selected' : '' }}>Disabled</option>
+                    </select>
+                    {% if is_self %}
+                        <p class="user-form-note">You cannot disable your own account.</p>
+                    {% endif %}
+                </div>
+
+                <div class="products-field full">
+                    <label for="password">{{ is_new ? 'Password' : 'Reset Password (optional)' }}</label>
+                    <input type="password" id="password" name="password" minlength="8" autocomplete="new-password" placeholder="{{ is_new ? 'At least 8 characters' : 'Leave blank to keep the current password' }}" {{ is_new ? 'required' : '' }}>
+                </div>
+
+            </div>
+
+            <div class="products-form-actions">
+                <a href="{{ path('app_admin_users') }}" class="products-button products-button-light">Cancel</a>
+                <button type="submit" class="products-button products-button-primary">
+                    <span>✓</span> {{ is_new ? 'Create Account' : 'Save Changes' }}
+                </button>
+            </div>
+
+        </form>
+    </article>
+
+</div>
+</div>
+
+{% endblock %}

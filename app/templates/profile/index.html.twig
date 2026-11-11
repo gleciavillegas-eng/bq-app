@@ -1,0 +1,217 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}My Profile | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-products-page.css">
+
+    <style>
+        .profile-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+
+        .profile-summary {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 26px 28px;
+            border-bottom: 1px solid #f1e4d8;
+        }
+
+        .profile-avatar {
+            width: 68px;
+            height: 68px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: #7d2024;
+            color: #e6bb69;
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 30px;
+            font-weight: 800;
+        }
+
+        .profile-summary h3 {
+            margin: 0 0 4px;
+            font-family: "Fraunces", Georgia, serif;
+            font-size: 24px;
+        }
+
+        .profile-summary span {
+            color: #88756d;
+        }
+
+        .profile-rows {
+            padding: 8px 28px 24px;
+        }
+
+        .profile-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 14px 0;
+            border-bottom: 1px solid #f1e4d8;
+        }
+
+        .profile-row span {
+            color: #88756d;
+        }
+
+        .profile-row strong {
+            text-align: right;
+            overflow-wrap: anywhere;
+        }
+
+        .role-badge,
+        .status-pill {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: capitalize;
+        }
+
+        .role-badge.admin { background: #7d2024; color: #fff; }
+        .role-badge.staff { background: #fdf0d6; color: #8a5a00; }
+        .status-pill.active { background: #e5f3ea; color: #2a5c3d; }
+        .status-pill.disabled { background: #fbe7e7; color: #8a2a2d; }
+
+        .products-field input[type="password"] {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dcc6b7;
+            border-radius: 12px;
+            background: #fffaf6;
+            color: #251817;
+            font: inherit;
+        }
+
+        .products-field input[type="password"]:focus {
+            outline: none;
+            border-color: #c58a2a;
+            box-shadow: 0 0 0 4px rgba(197, 138, 42, 0.15);
+        }
+
+        @media (max-width: 1000px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+{% endblock %}
+
+{% block admin_icon %}♙{% endblock %}
+{% block admin_heading %}My Profile{% endblock %}
+{% block admin_subtitle %}View your account and change your password.{% endblock %}
+
+{% block admin_content %}
+
+<div class="products-content">
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="products-alert {{ type }}" role="alert">
+                <span class="products-alert-icon">{{ type == 'success' ? '✓' : '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="profile-grid">
+
+        {# ---------- PROFILE ---------- #}
+        <article class="products-form-panel">
+
+            <div class="products-panel-heading">
+                <div>
+                    <span class="products-section-kicker">ACCOUNT</span>
+                    <h2>Account Profile</h2>
+                </div>
+                <div class="products-panel-icon">♙</div>
+            </div>
+
+            <div class="profile-summary">
+                <div class="profile-avatar">{{ app.user.name|first|upper }}</div>
+                <div>
+                    <h3>{{ app.user.name }}</h3>
+                    <span>@{{ app.user.username }}</span>
+                </div>
+            </div>
+
+            <div class="profile-rows">
+                <div class="profile-row">
+                    <span>Username</span>
+                    <strong>{{ app.user.username }}</strong>
+                </div>
+
+                <div class="profile-row">
+                    <span>Email</span>
+                    <strong>{{ app.user.email }}</strong>
+                </div>
+
+                <div class="profile-row">
+                    <span>Phone</span>
+                    <strong>{{ app.user.phone ?: 'Not provided' }}</strong>
+                </div>
+
+                <div class="profile-row">
+                    <span>Role</span>
+                    <strong><span class="role-badge {{ app.user.role }}">{{ app.user.role }}</span></strong>
+                </div>
+
+                <div class="profile-row">
+                    <span>Status</span>
+                    <strong><span class="status-pill {{ app.user.status }}">{{ app.user.status }}</span></strong>
+                </div>
+
+                <div class="profile-row">
+                    <span>Date Created</span>
+                    <strong>{{ app.user.createdAt|date('F d, Y', 'Asia/Manila') }}</strong>
+                </div>
+            </div>
+        </article>
+
+        {# ---------- CHANGE PASSWORD ---------- #}
+        <article class="products-form-panel">
+
+            <div class="products-panel-heading">
+                <div>
+                    <span class="products-section-kicker">SECURITY</span>
+                    <h2>Change Password</h2>
+                </div>
+                <div class="products-panel-icon">●</div>
+            </div>
+
+            <form method="post" action="{{ path('app_profile_password') }}" class="products-form">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('change_password') }}">
+
+                <div class="products-field">
+                    <label for="current_password">Current Password</label>
+                    <input type="password" id="current_password" name="current_password" autocomplete="current-password" required>
+                </div>
+
+                <div class="products-field">
+                    <label for="new_password">New Password</label>
+                    <input type="password" id="new_password" name="new_password" minlength="8" autocomplete="new-password" placeholder="At least 8 characters" required>
+                </div>
+
+                <div class="products-field">
+                    <label for="confirm_password">Confirm New Password</label>
+                    <input type="password" id="confirm_password" name="confirm_password" minlength="8" autocomplete="new-password" required>
+                </div>
+
+                <div class="products-form-actions">
+                    <button type="submit" class="products-button products-button-primary"><span>✓</span> Update Password</button>
+                </div>
+
+            </form>
+        </article>
+
+    </div>
+</div>
+
+{% endblock %}

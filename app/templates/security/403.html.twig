@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}403 Access Denied | Burger Queen{% endblock %}
+
+{% block body %}
+
+<section class="page-hero">
+    <div class="container">
+        <span class="eyebrow">ERROR 403</span>
+
+        <h1>Access <span>Denied.</span></h1>
+
+        <p>
+            You do not have permission to view this page.
+            If you think this is a mistake, please contact the administrator.
+        </p>
+
+        <div class="hero-actions">
+            {% if is_granted('ROLE_ADMIN') %}
+                <a class="gold-btn" href="/admin/dashboard">Back to Dashboard</a>
+            {% elseif is_granted('ROLE_STAFF') %}
+                <a class="gold-btn" href="/manage/products">Back to My Products</a>
+            {% else %}
+                <a class="gold-btn" href="/">Back to Home</a>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}

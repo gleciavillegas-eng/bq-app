@@ -49,7 +49,7 @@
                     <div class="alert-content">
                         <strong>Login failed</strong>
                         <ul>
-                            <li>Incorrect username/email or password. Please try again.</li>
+                            <li>{{ error.messageKey == 'Invalid credentials.' ? 'Incorrect username/email or password. Please try again.' : error.messageKey }}</li>
                         </ul>
                     </div>
                 </div>

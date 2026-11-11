@@ -16,15 +16,23 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
     public function onAuthenticationSuccess(Request $request, TokenInterface $token): Response
     {
         $session = $request->getSession();
+        $roles = $token->getRoleNames();
 
-        // Admin: moadto sa dashboard
-        if (in_array('ROLE_ADMIN', $token->getRoleNames(), true)) {
+        // Admin: dashboard
+        if (in_array('ROLE_ADMIN', $roles, true)) {
             $this->removeTargetPath($session, 'main');
 
             return new RedirectResponse('/admin/dashboard');
         }
 
-        // Customer: balik sa page nga gusto niya ablihan (kung naa), kung wala sa Home
+        // Staff: products management
+        if (in_array('ROLE_STAFF', $roles, true)) {
+            $this->removeTargetPath($session, 'main');
+
+            return new RedirectResponse('/manage/products');
+        }
+
+        // Customer: balik sa gustong ablihan, o Home
         $target = $this->getTargetPath($session, 'main');
 
         if ($target) {

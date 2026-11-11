@@ -9,6 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(name: 'products')]
 class Product
 {
+    public const CATEGORIES = ['Burgers', 'Chicken', 'Fries', 'Sides', 'Drinks', 'Desserts', 'Combos'];
+    public const STATUSES = ['Available', 'Unavailable'];
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -31,6 +34,11 @@ class Product
 
     #[ORM\Column(length: 20)]
     private string $status = 'Available';
+
+    // Kinsa ang naghimo (admin o staff)
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(name: 'created_by_id', nullable: true, onDelete: 'SET NULL')]
+    private ?User $createdBy = null;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
@@ -62,6 +70,14 @@ class Product
 
     public function getStatus(): string { return $this->status; }
     public function setStatus(string $status): static { $this->status = $status; return $this; }
+
+    public function getCreatedBy(): ?User { return $this->createdBy; }
+    public function setCreatedBy(?User $createdBy): static { $this->createdBy = $createdBy; return $this; }
+
+    public function isOwnedBy(?User $user): bool
+    {
+        return $user !== null && $this->createdBy !== null && $this->createdBy->getId() === $user->getId();
+    }
 
     public function getCreatedAt(): \DateTimeImmutable { return $this->createdAt; }
 

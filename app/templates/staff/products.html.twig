@@ -1,0 +1,372 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}My Products | Burger Queen{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-products-page.css">
+
+    <style>
+        .products-filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 16px 28px;
+            border-bottom: 1px solid #eadbd0;
+        }
+
+        .products-filter input,
+        .products-filter select {
+            padding: 10px 14px;
+            border: 1px solid #dcc6b7;
+            border-radius: 12px;
+            background: #fffaf6;
+            font: inherit;
+        }
+
+        .products-filter input[type="search"] {
+            flex: 1;
+            min-width: 180px;
+        }
+
+        .product-owner {
+            display: block;
+            margin-top: 4px;
+            color: #88756d;
+            font-size: 12px;
+        }
+
+        .product-owner.mine {
+            color: #2a5c3d;
+            font-weight: 700;
+        }
+
+        .product-readonly {
+            color: #b2a198;
+            font-size: 12px;
+            font-style: italic;
+        }
+    </style>
+{% endblock %}
+
+{% block admin_icon %}▣{% endblock %}
+{% block admin_heading %}My Products{% endblock %}
+{% block admin_subtitle %}Add products and manage the ones you created.{% endblock %}
+
+{% block admin_content %}
+
+<div class="products-content">
+
+    <section class="products-hero">
+        <div class="products-hero-decoration decoration-one"></div>
+        <div class="products-hero-decoration decoration-two"></div>
+
+        <div class="products-hero-copy">
+            <span class="products-eyebrow"><span>♛</span> STAFF WORKSPACE</span>
+            <h2>Menu Products</h2>
+            <p>You can view every product, but you can only edit or delete the products you created.</p>
+        </div>
+
+        <div class="products-hero-stat">
+            <span class="products-hero-stat-icon">♕</span>
+            <div>
+                <strong>{{ products|length|number_format }}</strong>
+                <span>Products</span>
+            </div>
+        </div>
+    </section>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="products-alert {{ type }}" role="alert">
+                <span class="products-alert-icon">{{ type == 'success' ? '✓' : '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section class="products-layout">
+
+        {# ---------- FORM ---------- #}
+        <article class="products-form-panel">
+
+            <div class="products-panel-heading">
+                <div>
+                    <span class="products-section-kicker">{{ edit_product ? 'EDIT MY PRODUCT' : 'ADD NEW ITEM' }}</span>
+                    <h2>{{ edit_product ? 'Edit Product' : 'Create Product' }}</h2>
+                </div>
+                <div class="products-panel-icon">{{ edit_product ? '✎' : '+' }}</div>
+            </div>
+
+            <form method="post" action="{{ path('app_staff_product_save') }}" class="products-form" enctype="multipart/form-data">
+
+                <input type="hidden" name="_token" value="{{ csrf_token('staff_product_save') }}">
+
+                {% if edit_product %}
+                    <input type="hidden" name="id" value="{{ edit_product.id }}">
+                {% endif %}
+
+                <div class="products-field">
+                    <label for="product-name">Product Name</label>
+                    <input type="text" id="product-name" name="name" value="{{ edit_product ? edit_product.name : '' }}" placeholder="e.g. Royal Classic Burger" maxlength="120" required>
+                </div>
+
+                <div class="products-field">
+                    <label for="product-category">Category</label>
+                    <select id="product-category" name="category" required>
+                        <option value="">Select category</option>
+                        {% for category in categories %}
+                            <option value="{{ category }}" {{ edit_product and edit_product.category == category ? 'selected' : '' }}>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="products-field">
+                    <label for="product-price">Price</label>
+                    <div class="price-input">
+                        <span>₱</span>
+                        <input type="number" id="product-price" name="price" value="{{ edit_product ? edit_product.price : '' }}" placeholder="0.00" min="0.01" step="0.01" required>
+                    </div>
+                </div>
+
+                <div class="products-field">
+                    <label for="product-status">Status</label>
+                    <select id="product-status" name="status">
+                        {% for status in statuses %}
+                            <option value="{{ status }}" {{ edit_product and edit_product.status == status ? 'selected' : '' }}>{{ status }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="products-field products-image-field">
+                    <label for="product-image">Product Image</label>
+
+                    <div class="product-upload-box">
+                        <input type="file" id="product-image" name="image" accept=".jpg,.jpeg,.png,image/jpeg,image/png">
+
+                        <label for="product-image" class="product-upload-label">
+                            <span class="product-upload-icon">↑</span>
+                            <span class="product-upload-text">
+                                <strong>Choose Product Image</strong>
+                                <small>JPG or PNG · Maximum 5 MB</small>
+                            </span>
+                            <span class="product-upload-button">Browse</span>
+                        </label>
+                    </div>
+
+                    {% if edit_product and edit_product.image %}
+                        <div class="current-product-image">
+                            <div class="current-product-image-preview">
+                                <img src="/{{ edit_product.image }}" alt="{{ edit_product.name }}">
+                            </div>
+                            <div class="current-product-image-copy">
+                                <span>CURRENT IMAGE</span>
+                                <strong>{{ edit_product.image|split('/')|last }}</strong>
+                                <small>Choose a new image above to replace it.</small>
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div id="product-image-preview" class="product-upload-preview" hidden>
+                        <div class="product-upload-preview-image">
+                            <img id="product-preview-image" src="" alt="Selected product preview">
+                        </div>
+                        <div class="product-upload-preview-copy">
+                            <strong>New image selected</strong>
+                            <span id="product-image-name"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="products-field products-field-full">
+                    <label for="product-description">Description</label>
+                    <textarea id="product-description" name="description" rows="4" maxlength="1000" placeholder="Describe this delicious menu item...">{{ edit_product ? edit_product.description : '' }}</textarea>
+                </div>
+
+                <div class="products-form-actions">
+                    {% if edit_product %}
+                        <a href="{{ path('app_staff_products') }}" class="products-button products-button-light">Cancel</a>
+                        <button type="submit" class="products-button products-button-primary"><span>✓</span> Update Product</button>
+                    {% else %}
+                        <button type="reset" class="products-button products-button-light">Clear</button>
+                        <button type="submit" class="products-button products-button-primary"><span>+</span> Add Product</button>
+                    {% endif %}
+                </div>
+
+            </form>
+        </article>
+
+        {# ---------- LIST ---------- #}
+        <article class="products-list-panel">
+
+            <div class="products-panel-heading">
+                <div>
+                    <span class="products-section-kicker">MENU</span>
+                    <h2>All Products</h2>
+                </div>
+                <span class="products-count-badge">{{ products|length|number_format }} Items</span>
+            </div>
+
+            <form method="get" action="{{ path('app_staff_products') }}" class="products-filter">
+                <input type="search" name="search" value="{{ search }}" placeholder="Search products..." aria-label="Search products">
+
+                <select name="category" aria-label="Filter by category">
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {{ category_filter == category ? 'selected' : '' }}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="products-button products-button-primary">Search</button>
+
+                {% if search != '' or category_filter != '' %}
+                    <a href="{{ path('app_staff_products') }}" class="products-button products-button-light">Clear</a>
+                {% endif %}
+            </form>
+
+            {% if products %}
+                <div class="products-table-wrapper">
+                    <table class="products-table">
+                        <thead>
+                            <tr>
+                                <th>Product</th>
+                                <th>Category</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            {% for product in products %}
+                                {% set mine = product.ownedBy(app.user) %}
+                                {% set can_modify = mine or is_granted('ROLE_ADMIN') %}
+
+                                <tr>
+                                    <td>
+                                        <div class="product-cell">
+                                            {% if product.image %}
+                                                <div class="product-image">
+                                                    <img src="/{{ product.image }}" alt="{{ product.name }}" loading="lazy">
+                                                </div>
+                                            {% else %}
+                                                <div class="product-image product-image-placeholder">♛</div>
+                                            {% endif %}
+
+                                            <div class="product-information">
+                                                <strong>{{ product.name }}</strong>
+                                                <span>#{{ product.id }}</span>
+                                                <span class="product-owner {{ mine ? 'mine' : '' }}">
+                                                    {% if mine %}
+                                                        ✓ Created by you
+                                                    {% elseif product.createdBy %}
+                                                        By {{ product.createdBy.name }}
+                                                    {% else %}
+                                                        By Admin / System
+                                                    {% endif %}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </td>
+
+                                    <td><span class="product-category">{{ product.category }}</span></td>
+
+                                    <td><strong class="product-price">₱{{ product.price|number_format(2) }}</strong></td>
+
+                                    <td>
+                                        <span class="product-status {{ product.status == 'Available' ? '' : 'unavailable' }}">
+                                            <span></span> {{ product.status }}
+                                        </span>
+                                    </td>
+
+                                    <td>
+                                        {% if can_modify %}
+                                            <div class="product-actions">
+                                                <a href="{{ path('app_staff_products', {edit: product.id}) }}" class="product-action product-action-edit" title="Edit product">✎</a>
+
+                                                <form method="post" action="{{ path('app_staff_product_delete', {id: product.id}) }}" class="delete-product-form" data-name="{{ product.name }}">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('staff_product_delete') }}">
+                                                    <button type="submit" class="product-action product-action-delete" title="Delete product">×</button>
+                                                </form>
+                                            </div>
+                                        {% else %}
+                                            <span class="product-readonly">View only</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="products-empty">
+                    <div class="products-empty-icon">♛</div>
+                    <h3>No products found.</h3>
+                    <p>Create your first Burger Queen menu item using the form.</p>
+                </div>
+            {% endif %}
+
+        </article>
+
+    </section>
+
+</div>
+
+{% endblock %}
+
+{% block admin_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const imageInput = document.getElementById('product-image');
+    const previewContainer = document.getElementById('product-image-preview');
+    const previewImage = document.getElementById('product-preview-image');
+    const imageName = document.getElementById('product-image-name');
+
+    if (imageInput && previewContainer && previewImage) {
+        imageInput.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+
+            if (!file) {
+                previewContainer.hidden = true;
+                previewImage.src = '';
+                if (imageName) imageName.textContent = '';
+                return;
+            }
+
+            if (!['image/jpeg', 'image/png'].includes(file.type)) {
+                alert('Please select a JPG or PNG image.');
+                this.value = '';
+                previewContainer.hidden = true;
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('Product image must be 5 MB or smaller.');
+                this.value = '';
+                previewContainer.hidden = true;
+                return;
+            }
+
+            if (imageName) imageName.textContent = file.name;
+
+            const reader = new FileReader();
+            reader.onload = function (event) {
+                previewImage.src = event.target.result;
+                previewContainer.hidden = false;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    document.querySelectorAll('.delete-product-form').forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            const name = form.dataset.name || 'this product';
+
+            if (!confirm('Delete "' + name + '"?\n\nThis action cannot be undone.')) {
+                event.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

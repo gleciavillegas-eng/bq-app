@@ -1,0 +1,268 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Users | Burger Queen Admin{% endblock %}
+
+{% block page_css %}
+    <link rel="stylesheet" href="/assets/css/admin-customers.css">
+
+    <style>
+        .customers-stats {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+
+        .role-badge,
+        .status-pill {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            text-transform: capitalize;
+        }
+
+        .role-badge.admin { background: #7d2024; color: #fff; }
+        .role-badge.staff { background: #fdf0d6; color: #8a5a00; }
+        .role-badge.customer { background: #f8e9db; color: #7d2024; }
+
+        .status-pill.active { background: #e5f3ea; color: #2a5c3d; }
+        .status-pill.disabled { background: #fbe7e7; color: #8a2a2d; }
+
+        .user-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .user-actions form {
+            margin: 0;
+        }
+
+        .user-action {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 14px;
+            border: 1px solid #dcc6b7;
+            border-radius: 10px;
+            background: #fff;
+            color: #55433d;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: 0.2s ease;
+        }
+
+        .user-action:hover { background: #f8e9db; }
+        .user-action.danger { border-color: #efbcbc; color: #a63c3f; }
+        .user-action.danger:hover { background: #a63c3f; color: #fff; }
+
+        .users-add-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 22px;
+            border-radius: 12px;
+            background: #7d2024;
+            color: #fff;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .users-add-button:hover { background: #541519; }
+
+        .user-filter-select {
+            padding: 12px 14px;
+            border: 1px solid #dcc6b7;
+            border-radius: 12px;
+            background: #fffaf6;
+            font: inherit;
+        }
+
+        .customers-toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        @media (max-width: 1100px) {
+            .customers-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+        }
+    </style>
+{% endblock %}
+
+{% block admin_icon %}♕{% endblock %}
+{% block admin_heading %}Users{% endblock %}
+{% block admin_subtitle %}Manage admin, staff, and customer accounts.{% endblock %}
+
+{% block admin_content %}
+
+<div class="customers-content">
+
+    <section class="customers-hero">
+        <div class="customers-hero-decoration decoration-one"></div>
+        <div class="customers-hero-decoration decoration-two"></div>
+
+        <div class="customers-hero-copy">
+            <span class="customers-eyebrow">♛ USER MANAGEMENT</span>
+            <h2>Accounts &amp; Roles</h2>
+            <p>Create staff and admin accounts, change roles, reset passwords, and disable or remove accounts.</p>
+        </div>
+
+        <div class="customers-hero-stat">
+            <div class="customers-hero-stat-icon">♕</div>
+            <div>
+                <strong>{{ count_all|number_format }}</strong>
+                <span>Accounts</span>
+            </div>
+        </div>
+    </section>
+
+    {% for type, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="customers-alert {{ type }}" role="alert">
+                <span class="alert-icon">{{ type == 'success' ? '✓' : '!' }}</span>
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <section class="customers-stats">
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon">♕</div>
+            <div class="customer-stat-copy"><span>TOTAL USERS</span><strong>{{ count_all|number_format }}</strong></div>
+        </article>
+
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon crowns">♛</div>
+            <div class="customer-stat-copy"><span>ADMINS</span><strong>{{ count_admin|number_format }}</strong></div>
+        </article>
+
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon active">✦</div>
+            <div class="customer-stat-copy"><span>STAFF</span><strong>{{ count_staff|number_format }}</strong></div>
+        </article>
+
+        <article class="customer-stat-card">
+            <div class="customer-stat-icon">♙</div>
+            <div class="customer-stat-copy"><span>CUSTOMERS</span><strong>{{ count_customer|number_format }}</strong></div>
+        </article>
+    </section>
+
+    <section class="customers-panel">
+
+        <div class="customers-panel-header">
+            <div class="customers-panel-title">
+                <span class="customers-section-kicker">ACCOUNT LIST</span>
+                <h3>All Users</h3>
+                <p>Search and filter every account in the system.</p>
+            </div>
+
+            <a href="{{ path('app_admin_user_new') }}" class="users-add-button">+ Create Account</a>
+        </div>
+
+        <div class="customers-toolbar">
+            <form method="get" action="{{ path('app_admin_users') }}" class="customer-search-form">
+                <div class="customer-search-box">
+                    <span class="search-icon" aria-hidden="true">⌕</span>
+                    <input type="search" name="search" value="{{ search }}" placeholder="Search by name, username, or email..." autocomplete="off" aria-label="Search users">
+                </div>
+
+                <select name="role" class="user-filter-select" aria-label="Filter by role">
+                    <option value="">All roles</option>
+                    {% for role in roles %}
+                        <option value="{{ role }}" {{ role_filter == role ? 'selected' : '' }}>{{ role|capitalize }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="customer-search-button"><span aria-hidden="true">⌕</span> Search</button>
+
+                {% if search != '' or role_filter != '' %}
+                    <a href="{{ path('app_admin_users') }}" class="customer-clear-button">Clear</a>
+                {% endif %}
+            </form>
+        </div>
+
+        {% if users %}
+            <div class="customers-table-wrapper">
+                <table class="customers-table">
+                    <thead>
+                        <tr>
+                            <th>USER</th>
+                            <th>EMAIL</th>
+                            <th>ROLE</th>
+                            <th>STATUS</th>
+                            <th>DATE CREATED</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>
+                                    <div class="customer-cell">
+                                        <div class="customer-avatar"><span>{{ user.name|first|upper }}</span></div>
+                                        <div class="customer-information">
+                                            <strong>{{ user.name }}{{ user.id == app.user.id ? ' (You)' : '' }}</strong>
+                                            <span>@{{ user.username }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="customer-email">
+                                        <span class="email-icon" aria-hidden="true">✉</span>
+                                        <span>{{ user.email }}</span>
+                                    </div>
+                                </td>
+
+                                <td><span class="role-badge {{ user.role }}">{{ user.role }}</span></td>
+
+                                <td><span class="status-pill {{ user.status }}">{{ user.status }}</span></td>
+
+                                <td>
+                                    <div class="customer-date">
+                                        <strong>{{ user.createdAt|date('M d, Y', 'Asia/Manila') }}</strong>
+                                        <span>{{ user.createdAt|date('h:i A', 'Asia/Manila') }}</span>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="user-actions">
+                                        <a href="{{ path('app_admin_user_edit', {id: user.id}) }}" class="user-action">✎ Edit</a>
+
+                                        {% if user.id != app.user.id %}
+                                            <form method="post" action="{{ path('app_admin_user_status', {id: user.id}) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_user_status') }}">
+                                                <button type="submit" class="user-action">{{ user.active ? '⏸ Disable' : '▶ Enable' }}</button>
+                                            </form>
+
+                                            <form method="post" action="{{ path('app_admin_user_delete', {id: user.id}) }}" onsubmit="return confirm('Delete account &quot;{{ user.username }}&quot;? This cannot be undone.');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('admin_user_delete') }}">
+                                                <button type="submit" class="user-action danger">× Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="customers-empty">
+                <div class="customers-empty-icon">♕</div>
+                <h3>No accounts found</h3>
+                <p>No accounts matched your search or filter.</p>
+                <a href="{{ path('app_admin_users') }}" class="customers-empty-button">Clear Filters</a>
+            </div>
+        {% endif %}
+
+    </section>
+
+</div>
+
+{% endblock %}

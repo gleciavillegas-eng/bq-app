@@ -12,17 +12,18 @@
 <body>
 
 {% set path = app.request.pathInfo %}
+{% set role_label = is_granted('ROLE_ADMIN') ? 'Administrator' : 'Staff' %}
 
 <div class="admin-page">
 
-    {# ---------- SIDEBAR ---------- #}
-    <aside class="admin-sidebar" id="admin-sidebar" aria-label="Admin navigation">
+    {# ---------- SIDEBAR (role-based) ---------- #}
+    <aside class="admin-sidebar" id="admin-sidebar" aria-label="Navigation">
 
         <div class="admin-brand">
             <div class="admin-brand-crown"><span>♛</span></div>
             <div class="admin-brand-text">
                 <strong>BURGER <span>QUEEN</span></strong>
-                <small>ADMIN PANEL</small>
+                <small>{{ is_granted('ROLE_ADMIN') ? 'ADMIN PANEL' : 'STAFF PANEL' }}</small>
             </div>
         </div>
 
@@ -34,35 +35,53 @@
                 <span></span>
             </div>
 
-            <a href="/admin/dashboard" class="admin-nav-item {{ path starts with '/admin/dashboard' ? 'active' : '' }}">
-                <span class="nav-icon"><span>⌂</span></span>
-                <span class="nav-text">Dashboard</span>
-                {% if path starts with '/admin/dashboard' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
-            </a>
+            {% if is_granted('ROLE_ADMIN') %}
 
-            <a href="/admin/products" class="admin-nav-item {{ path starts with '/admin/products' ? 'active' : '' }}">
-                <span class="nav-icon"><span>▣</span></span>
-                <span class="nav-text">Products</span>
-                {% if path starts with '/admin/products' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
-            </a>
+                <a href="/admin/dashboard" class="admin-nav-item {{ path starts with '/admin/dashboard' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>⌂</span></span>
+                    <span class="nav-text">Dashboard</span>
+                    {% if path starts with '/admin/dashboard' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
 
-            <a href="/admin/orders" class="admin-nav-item {{ path starts with '/admin/orders' ? 'active' : '' }}">
-                <span class="nav-icon"><span>▤</span></span>
-                <span class="nav-text">Orders</span>
-                {% if path starts with '/admin/orders' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
-            </a>
+                <a href="/admin/products" class="admin-nav-item {{ path starts with '/admin/products' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>▣</span></span>
+                    <span class="nav-text">Products</span>
+                    {% if path starts with '/admin/products' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
 
-            <a href="/admin/customers" class="admin-nav-item {{ path starts with '/admin/customers' ? 'active' : '' }}">
-                <span class="nav-icon"><span>♙</span></span>
-                <span class="nav-text">Customers</span>
-                {% if path starts with '/admin/customers' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
-            </a>
+                <a href="/admin/orders" class="admin-nav-item {{ path starts with '/admin/orders' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>▤</span></span>
+                    <span class="nav-text">Orders</span>
+                    {% if path starts with '/admin/orders' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
 
-            <a href="/admin/messages" class="admin-nav-item {{ path starts with '/admin/messages' ? 'active' : '' }}">
-                <span class="nav-icon"><span>✉</span></span>
-                <span class="nav-text">Messages</span>
-                {% if path starts with '/admin/messages' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
-            </a>
+                <a href="/admin/customers" class="admin-nav-item {{ path starts with '/admin/customers' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>♙</span></span>
+                    <span class="nav-text">Customers</span>
+                    {% if path starts with '/admin/customers' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
+
+                <a href="/admin/users" class="admin-nav-item {{ path starts with '/admin/users' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>♕</span></span>
+                    <span class="nav-text">Users</span>
+                    {% if path starts with '/admin/users' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
+
+                <a href="/admin/messages" class="admin-nav-item {{ path starts with '/admin/messages' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>✉</span></span>
+                    <span class="nav-text">Messages</span>
+                    {% if path starts with '/admin/messages' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
+
+            {% else %}
+
+                <a href="/manage/products" class="admin-nav-item {{ path starts with '/manage/products' ? 'active' : '' }}">
+                    <span class="nav-icon"><span>▣</span></span>
+                    <span class="nav-text">My Products</span>
+                    {% if path starts with '/manage/products' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+                </a>
+
+            {% endif %}
 
             <div class="admin-nav-divider" aria-hidden="true"></div>
 
@@ -71,6 +90,12 @@
                 <span class="admin-nav-label-text">ACCOUNT</span>
                 <span></span>
             </div>
+
+            <a href="/profile" class="admin-nav-item {{ path starts with '/profile' ? 'active' : '' }}">
+                <span class="nav-icon"><span>♙</span></span>
+                <span class="nav-text">My Profile</span>
+                {% if path starts with '/profile' %}<span class="nav-active-dot" aria-hidden="true"></span>{% endif %}
+            </a>
 
             <a href="/" class="admin-nav-item">
                 <span class="nav-icon"><span>◉</span></span>
@@ -89,7 +114,7 @@
             <div class="sidebar-crown">♛</div>
             <div class="sidebar-footer-text">
                 <strong>Royal Court</strong>
-                <span>Administrator</span>
+                <span>{{ role_label }}</span>
             </div>
         </div>
 
@@ -112,7 +137,7 @@
                         <span class="topbar-brand-mark">♛</span>
                         <span>BURGER QUEEN</span>
                         <b>/</b>
-                        <span>ADMIN</span>
+                        <span>{{ is_granted('ROLE_ADMIN') ? 'ADMIN' : 'STAFF' }}</span>
                     </div>
 
                     <div class="topbar-heading-row">
@@ -135,7 +160,7 @@
 
                 <span class="topbar-divider"></span>
 
-                <div class="admin-user-card">
+                <a href="/profile" class="admin-user-card" style="text-decoration: none; color: inherit;">
                     <div class="admin-user-avatar">
                         <span>{{ app.user.name|first|upper }}</span>
                         <i class="admin-online-indicator"></i>
@@ -143,11 +168,11 @@
 
                     <div class="admin-user-copy">
                         <strong>{{ app.user.name }}</strong>
-                        <span><i></i> Administrator</span>
+                        <span><i></i> {{ role_label }}</span>
                     </div>
 
                     <span class="profile-chevron">▾</span>
-                </div>
+                </a>
             </div>
         </header>
 
@@ -161,7 +186,7 @@
 
             <div class="footer-separator"></div>
 
-            <span>Administration Panel</span>
+            <span>{{ is_granted('ROLE_ADMIN') ? 'Administration Panel' : 'Staff Panel' }}</span>
 
             <span class="footer-right">Serving the Royal Court with pride.</span>
         </footer>

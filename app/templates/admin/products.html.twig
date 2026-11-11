@@ -164,6 +164,23 @@
                 <span class="products-count-badge">{{ products|length|number_format }} Items</span>
             </div>
 
+            <form method="get" action="{{ path('app_admin_products') }}" style="display: flex; flex-wrap: wrap; gap: 10px; padding: 16px 28px; border-bottom: 1px solid #eadbd0;">
+                <input type="search" name="search" value="{{ search }}" placeholder="Search products..." aria-label="Search products" style="flex: 1; min-width: 180px; padding: 10px 14px; border: 1px solid #dcc6b7; border-radius: 12px; background: #fffaf6; font: inherit;">
+
+                <select name="category" aria-label="Filter by category" style="padding: 10px 14px; border: 1px solid #dcc6b7; border-radius: 12px; background: #fffaf6; font: inherit;">
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                        <option value="{{ category }}" {{ category_filter == category ? 'selected' : '' }}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+
+                <button type="submit" class="products-button products-button-primary">Search</button>
+
+                {% if search != '' or category_filter != '' %}
+                    <a href="{{ path('app_admin_products') }}" class="products-button products-button-light">Clear</a>
+                {% endif %}
+            </form>
+            
             {% if products %}
                 <div class="products-table-wrapper">
                     <table class="products-table">
